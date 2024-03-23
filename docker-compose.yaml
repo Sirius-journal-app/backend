@@ -19,6 +19,8 @@ services:
       dockerfile: Dockerfile
     container_name: db_migration
     restart: "on-failure"
+    environment:
+      - JOURNAL_APP_CONFIG_PATH=.configs/app.docker.toml
     depends_on:
       - pgsql
     command: sh -c "python -m alembic upgrade head"

@@ -1,1 +1,3 @@
-CONFIG_PATH = ".configs/app.toml"  # Will be replaced by environment variable
+import os
+
+CONFIG_PATH = os.getenv("JOURNAL_APP_CONFIG_PATH") or ".configs/app.toml"
