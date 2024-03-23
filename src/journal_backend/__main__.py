@@ -2,12 +2,12 @@ import asyncio
 
 from journal_backend.app_setup import (
     create_app,
+    create_http_server,
     initialise_dependencies,
     initialise_routers,
 )
 from journal_backend.config import load_config
 from journal_backend.consts import CONFIG_PATH
-from journal_backend.app_setup import create_http_server
 
 
 async def main() -> None:

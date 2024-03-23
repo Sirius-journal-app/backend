@@ -1,13 +1,12 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 from journal_backend.config import load_config
 from journal_backend.consts import CONFIG_PATH
 from journal_backend.database.base import Base
+from journal_backend.entity.models import *  # noqa
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -25,6 +24,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 config.set_main_option("sqlalchemy.url", dev_cfg.db.uri)
+
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

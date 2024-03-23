@@ -7,7 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from journal_backend.config import AppConfig, Config, HttpServerConfig
 from journal_backend.database.dependencies import get_session
-from journal_backend.database.sa_utils import create_engine, create_session_maker
+from journal_backend.database.sa_utils import (
+    create_engine,
+    create_session_maker,
+)
 from journal_backend.depends_stub import Stub
 
 router = APIRouter()
