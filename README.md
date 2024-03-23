@@ -14,6 +14,7 @@ Backend for the sirius-journal
 
 ### Backend/low-level part
 
+- [Toml](https://pypi.org/project/toml/) - A library for parsing and serialising configs from toml files into python structures;
 - [Pydantic](https://docs.pydantic.dev/latest/) - A most popular library for building validation rules;
 - [SQLAlchemy](https://www.sqlalchemy.org/) - An ORM and SQL toolkit that provides easy database interaction from python;
 - [Alembic](https://alembic.sqlalchemy.org/en/latest/) - Database migration tool for SQLAlchemy.
