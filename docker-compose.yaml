@@ -1,0 +1,35 @@
+version: '3.3'
+services:
+  journal-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: journal-backend
+    ports:
+      - "8000:8000"
+    restart: always
+    command: sh -c "python -m src.journal_backend"
+    depends_on:
+      - pgsql
+      - db_migration
+
+  db_migration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: db_migration
+    restart: "on-failure"
+    depends_on:
+      - pgsql
+    command: sh -c "python -m alembic upgrade head"
+
+  pgsql:
+    image: postgres:16.0-alpine3.18
+    container_name: pgsql
+    env_file:
+      - .configs/db.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - /journal-backend/postgresql/data:/var/lib/postgresql/data
+    restart: always
