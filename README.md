@@ -21,7 +21,7 @@ Backend for the sirius-journal
 
 ### Testing
 - [Pytest](https://docs.pytest.org) - A python testing framework;
-- [unittests](https://docs.python.org/3/library/unittest.html) - A python builtin library for building unit tests
+- [Unittest](https://docs.python.org/3/library/unittest.html) - A python builtin library for building unit tests
 
 ### Docs
 - [SwaggerUI](https://github.com/swagger-api/swagger-ui) -  A tool for describing, visualizing and interaction with the API’s resources
