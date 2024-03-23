@@ -3,7 +3,7 @@ requires = ["setuptools>=65.5.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sirius-journal-backend"
+name = "journal_backend"
 version = "0.1.0"
 description = "Backend for the sirius-journal."
 authors = [
@@ -15,13 +15,15 @@ requires-python = ">=3.11"
 
 dependencies = [
     "fastapi==0.104.1",
-    "asyncpg==0.29.0",
+    "psycopg==3.1.18",
+    "psycopg-binary==3.1.18",
     "SQLAlchemy==2.0.23",
     "alembic==1.12.1",
     "uvicorn==0.24.0.post1",
     "pydantic[email]==2.5.2",
     "fastapi-users==12.1.2",
     "fastapi-users-db-sqlalchemy==6.0.1",
+    "toml==0.10.2",
 ]
 
 [project.optional-dependencies]
