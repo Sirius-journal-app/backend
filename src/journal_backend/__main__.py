@@ -1,3 +1,5 @@
+"""Application entry point."""
+
 import asyncio
 
 from journal_backend.app_setup import (
@@ -11,6 +13,7 @@ from journal_backend.consts import CONFIG_PATH
 
 
 async def main() -> None:
+    """Set up application and start http server."""
     config = load_config(CONFIG_PATH)
     app = create_app(config.app)
 

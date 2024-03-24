@@ -18,11 +18,16 @@ class Class(Base):  # type: ignore[misc]
 
     id: Mapped[int] = mapped_column(primary_key=True)
     starts_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    duration: Mapped[timedelta] = mapped_column(Interval(native=True), default=DEFAULT_CLASS_DURATION)
+    duration: Mapped[timedelta] = mapped_column(
+        Interval(native=True),
+        default=DEFAULT_CLASS_DURATION
+    )
     group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"))
     teacher_id: Mapped[Optional[int]] = mapped_column()
     subject_id: Mapped[Optional[int]] = mapped_column()
-    classroom_id: Mapped[Optional[int]] = mapped_column(ForeignKey("classrooms.id", ondelete="SET NULL"))
+    classroom_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("classrooms.id", ondelete="SET NULL")
+    )
 
     group: Mapped["Group"] = relationship(back_populates="students")
     teacher: Mapped["Teacher"] = relationship(back_populates="classes")

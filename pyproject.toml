@@ -7,9 +7,9 @@ name = "journal_backend"
 version = "0.1.0"
 description = "Backend for the sirius-journal."
 authors = [
-    {name = "akiko23", email = "dmvasilenko43@gmail.com"},
+    { name = "akiko23", email = "dmvasilenko43@gmail.com" },
 ]
-license = {text = "MIT License"}
+license = { text = "MIT License" }
 readme = "README.md"
 requires-python = ">=3.11"
 
@@ -35,7 +35,7 @@ test = [
 lint = [
     "mypy==1.7.1",
     "isort==5.12.0",
-    "ruff==0.1.6",
+    "ruff==0.3.4",
 ]
 
 [project.urls]
@@ -66,6 +66,7 @@ exclude = [
     "dist",
     "venv",
     ".configs/db.env",
+    "*/migrations/versions",
 ]
 
 # Same as Black.
@@ -75,11 +76,11 @@ indent-width = 4
 # Assume Python 3.11
 target-version = "py311"
 
+pydocstyle.convention = "pep257"
+
+
 [tool.ruff.lint]
-# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
-# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
-# McCabe complexity (`C901`) by default.
-select = ["E4", "E7", "E9", "F"]
+select = ["E", "F", "C", "D", "W"]
 ignore = []
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
@@ -94,7 +95,10 @@ quote-style = "single"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
+docstring-code-line-length = "dynamic"
 
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
 
 # Isort configuration
 [tool.isort]

@@ -8,6 +8,8 @@ services:
     ports:
       - "8000:8000"
     restart: always
+    environment:
+      - JOURNAL_APP_CONFIG_PATH=.configs/app.docker.toml
     command: sh -c "python -m src.journal_backend"
     depends_on:
       - pgsql
@@ -30,8 +32,6 @@ services:
     container_name: pgsql
     env_file:
       - .configs/db.env
-    ports:
-      - "5432:5432"
     volumes:
       - /journal-backend/postgresql/data:/var/lib/postgresql/data
     restart: always
