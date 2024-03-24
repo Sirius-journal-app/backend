@@ -4,20 +4,20 @@ from sqlalchemy import ForeignKey, PrimaryKeyConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from journal_backend.database.base import Base
-from journal_backend.entity.users.mixins import UserColumnsMixin
+from journal_backend.entity.users.mixins import UserProtocolMixin
 
 if TYPE_CHECKING:
     from journal_backend.entity.classes.models import Class
 
 
-class Teacher(Base, UserColumnsMixin):  # type: ignore[misc]
+class Teacher(Base, UserProtocolMixin):  # type: ignore[misc]
     __tablename__ = "teachers"
 
     qualification: Mapped[str] = mapped_column()
     education: Mapped[str] = mapped_column()
 
-    competencies: Mapped[list["Competence"]] = relationship(back_populates="teacher")
-    classes: Mapped[list["Class"]] = relationship(back_populates="teacher")
+    competencies: Mapped[list["Competence"]] = relationship(back_populates="teacher", lazy="joined")
+    classes: Mapped[list["Class"]] = relationship(back_populates="teacher", lazy="joined")
 
 
 class Subject(Base):  # type: ignore[misc]
@@ -28,7 +28,7 @@ class Subject(Base):  # type: ignore[misc]
 
     classes: Mapped[list["Class"]] = relationship(back_populates="subject")
     # People who are competent for the subject
-    competents: Mapped[list["Competence"]] = relationship(back_populates="subjects")
+    competents: Mapped[list["Competence"]] = relationship(back_populates="subject")
 
 
 class Competence(Base):  # type: ignore[misc]

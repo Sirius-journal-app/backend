@@ -8,6 +8,7 @@ from journal_backend.database.base import Base
 from journal_backend.entity.users.teachers.models import Subject, Teacher
 
 if TYPE_CHECKING:
+    from journal_backend.entity.academic_reports.models import AcademicReport
     from journal_backend.entity.users.students.models import Group
 
 DEFAULT_CLASS_DURATION = timedelta(minutes=60 * 1.5)
@@ -23,13 +24,14 @@ class Class(Base):  # type: ignore[misc]
         default=DEFAULT_CLASS_DURATION
     )
     group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"))
-    teacher_id: Mapped[Optional[int]] = mapped_column()
-    subject_id: Mapped[Optional[int]] = mapped_column()
+    teacher_id: Mapped[Optional[int]] = mapped_column(ForeignKey("teachers.id"))
+    subject_id: Mapped[Optional[int]] = mapped_column(ForeignKey("subjects.id"))
     classroom_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("classrooms.id", ondelete="SET NULL")
     )
 
-    group: Mapped["Group"] = relationship(back_populates="students")
+    academic_reports: Mapped[list["AcademicReport"]] = relationship(back_populates="lesson")
+    group: Mapped["Group"] = relationship(back_populates="classes",)
     teacher: Mapped["Teacher"] = relationship(back_populates="classes")
     subject: Mapped["Subject"] = relationship(back_populates="classes")
     classroom: Mapped["Classroom"] = relationship(back_populates="classes")
@@ -47,3 +49,5 @@ class Classroom(Base):  # type: ignore[misc]
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column()
+
+    classes: Mapped[list["Class"]] = relationship(back_populates="classroom")

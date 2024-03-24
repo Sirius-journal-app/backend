@@ -65,7 +65,7 @@ class Database:
     def __post_init__(self) -> None:
         """Initialise database URI."""
         self.uri = (
-            f"postgresql+psycopg://{self.user}:{self.password}@"  # noqa
+            f"postgresql+asyncpg://{self.user}:{self.password}@"  # noqa
             f"{self.host}:{self.port}/{self.name}"  # noqa
         )
 

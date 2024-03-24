@@ -1,6 +1,7 @@
 """Application entry point."""
 
 import asyncio
+import sys
 
 from journal_backend.app_setup import (
     create_app,
@@ -25,4 +26,7 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
     asyncio.run(main())
