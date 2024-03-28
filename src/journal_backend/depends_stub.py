@@ -6,7 +6,7 @@ class Stub:
     """Represent stub for app dependencies."""
     def __init__(
         self,
-        dependency: Callable[[Any, ...], Any],  # type: ignore[misc]
+        dependency: Any,  # type: ignore[misc]
         **kwargs: Dict[Hashable, Any],
     ) -> None:
         self._dependency = dependency

@@ -4,8 +4,13 @@ from typing import Optional
 from sqlalchemy import DateTime, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
+from journal_backend.database.base import Base
+from journal_backend.entity.users.enums import Role
 
-class UserProtocolMixin:
+
+class UserIdentity(Base):
+    __tablename__ = "user_identities"
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(64))
     surname: Mapped[str] = mapped_column(String(64))
@@ -17,11 +22,12 @@ class UserProtocolMixin:
     hashed_password: Mapped[str] = mapped_column(
         String(length=1024), nullable=False
     )
+    role: Mapped[Role] = mapped_column()
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_verified: Mapped[bool] = mapped_column(
         Boolean, default=False, nullable=False
     )
 
-    # students or teachers can't be a superusers (this is a stub for fastapi-users)
+    # can be defined by the role (this is a stub for fastapi-users)
     is_superuser: bool = False
 

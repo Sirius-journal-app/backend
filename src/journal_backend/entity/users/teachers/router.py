@@ -16,7 +16,7 @@ from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
 from journal_backend.entity.users.teachers.dependencies import get_teacher_service
 from journal_backend.entity.users.teachers.models import Teacher
-from journal_backend.entity.users.teachers.schemas import TeacherCreate, TeacherRead, TeacherUpdate
+from journal_backend.entity.users.teachers.dto import TeacherCreate, TeacherRead, TeacherUpdate
 
 router = APIRouter(prefix="/teachers")
 

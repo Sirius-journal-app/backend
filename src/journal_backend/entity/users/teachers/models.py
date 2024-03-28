@@ -4,15 +4,15 @@ from sqlalchemy import ForeignKey, PrimaryKeyConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from journal_backend.database.base import Base
-from journal_backend.entity.users.mixins import UserProtocolMixin
 
 if TYPE_CHECKING:
     from journal_backend.entity.classes.models import Class
 
 
-class Teacher(Base, UserProtocolMixin):  # type: ignore[misc]
+class Teacher(Base):  # type: ignore[misc]
     __tablename__ = "teachers"
 
+    id: Mapped[int] = mapped_column(primary_key=True)
     qualification: Mapped[str] = mapped_column()
     education: Mapped[str] = mapped_column()
 

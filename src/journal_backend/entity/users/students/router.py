@@ -16,9 +16,9 @@ from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
 from journal_backend.entity.users.students.dependencies import get_student_service
 from journal_backend.entity.users.students.models import Student
-from journal_backend.entity.users.students.schemas import StudentCreate, StudentRead, StudentUpdate
+from journal_backend.entity.users.students.dto import StudentCreate, StudentRead, StudentUpdate
 
-router = APIRouter(prefix="/students")
+router = APIRouter(prefix="/students", tags=["students"])
 
 
 def get_jwt_strategy(config: Config = Depends(Stub(Config))) -> JWTStrategy[Student, int]:
