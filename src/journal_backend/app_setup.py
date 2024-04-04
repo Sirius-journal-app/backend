@@ -3,12 +3,16 @@ from functools import partial
 
 import uvicorn
 from fastapi import APIRouter, FastAPI
-from journal_backend.entity.users.students.dependencies import get_student_service, get_student_repository
-from journal_backend.entity.users.students.repository import StudentRepository
-from journal_backend.entity.users.students.service import StudentService
-from journal_backend.entity.users.teachers.dependencies import get_teacher_service, get_teacher_repository
-from journal_backend.entity.users.teachers.repository import TeacherRepository
-from journal_backend.entity.users.teachers.service import TeacherService
+
+from journal_backend.entity.users.dependencies import get_user_repository
+from journal_backend.entity.users.repository import UserRepository
+from journal_backend.entity.users.service import UserService
+from journal_backend.entity.students.dependencies import get_student_service, get_student_repository
+from journal_backend.entity.students.repository import StudentRepository
+from journal_backend.entity.students.service import StudentService
+from journal_backend.entity.teachers.dependencies import get_teacher_service, get_teacher_repository
+from journal_backend.entity.teachers.repository import TeacherRepository
+from journal_backend.entity.teachers.service import TeacherService
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,8 +23,9 @@ from journal_backend.database.sa_utils import (
     create_session_maker,
 )
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.users.students.router import router as students_router
-from journal_backend.entity.users.teachers.router import router as teachers_router
+from journal_backend.entity.users.router import router as users_router
+from journal_backend.entity.students.router import router as students_router
+from journal_backend.entity.teachers.router import router as teachers_router
 from journal_backend.entity.academic_reports.router import router as ac_router
 
 router = APIRouter()
@@ -53,6 +58,7 @@ def initialise_routers(app: FastAPI) -> None:
         app (FastAPI): The FastAPI instance.
     """
     app.include_router(router)
+    app.include_router(users_router)
     app.include_router(teachers_router)
     app.include_router(students_router)
     app.include_router(ac_router)
@@ -72,6 +78,8 @@ def initialise_dependencies(app: FastAPI, config: Config) -> None:
     app.dependency_overrides[Stub(Config)] = lambda: config
     app.dependency_overrides[Stub(AppConfig)] = lambda: config.app
 
+    app.dependency_overrides[Stub(UserRepository)] = get_user_repository
+    app.dependency_overrides[Stub(UserService)] = get_user_repository
     app.dependency_overrides[Stub(StudentRepository)] = get_student_repository
     app.dependency_overrides[Stub(StudentService)] = get_student_service
     app.dependency_overrides[Stub(TeacherRepository)] = get_teacher_repository

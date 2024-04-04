@@ -1,30 +1,31 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import ForeignKey, PrimaryKeyConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from journal_backend.database.base import Base
+from journal_backend.entity.users.models import UserIdentity
 
-if TYPE_CHECKING:
-    from journal_backend.entity.classes.models import Class
+from journal_backend.entity.classes.models import Class
 
 
 class Teacher(Base):  # type: ignore[misc]
     __tablename__ = "teachers"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    qualification: Mapped[str] = mapped_column()
-    education: Mapped[str] = mapped_column()
+    id: Mapped[int] = mapped_column(ForeignKey("user_identity.id", ondelete="CASCADE"), primary_key=True)
+    qualification: Mapped[Optional[str]] = mapped_column()
+    education: Mapped[Optional[str]] = mapped_column()
 
-    competencies: Mapped[list["Competence"]] = relationship(back_populates="teacher", lazy="joined")
-    classes: Mapped[list["Class"]] = relationship(back_populates="teacher", lazy="joined")
+    identity: Mapped["UserIdentity"] = relationship(lazy="joined")
+    competencies: Mapped[list["Competence"]] = relationship(back_populates="teacher")
+    classes: Mapped[list["Class"]] = relationship(back_populates="teacher")
 
 
 class Subject(Base):  # type: ignore[misc]
     __tablename__ = "subjects"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(64))
+    name: Mapped[str] = mapped_column(String(64), unique=True)
 
     classes: Mapped[list["Class"]] = relationship(back_populates="subject")
     # People who are competent for the subject

@@ -1,6 +1,7 @@
 from datetime import date
 from typing import Optional
 
+from fastapi_users.db import SQLAlchemyBaseUserTable
 from sqlalchemy import DateTime, String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -8,8 +9,8 @@ from journal_backend.database.base import Base
 from journal_backend.entity.users.enums import Role
 
 
-class UserIdentity(Base):
-    __tablename__ = "user_identities"
+class UserIdentity(SQLAlchemyBaseUserTable, Base):
+    __tablename__ = "user_identity"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(64))

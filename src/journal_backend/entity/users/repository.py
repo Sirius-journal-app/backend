@@ -7,22 +7,22 @@ from fastapi_users_db_sqlalchemy import (
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from journal_backend.entity.users.students.models import Student
+from journal_backend.entity.users.models import UserIdentity
 
 
-class StudentRepository(SQLAlchemyUserDatabase[Student, int]):
+class UserRepository(SQLAlchemyUserDatabase[UserIdentity, int]):
     def __init__(
         self,
         session: AsyncSession,
-        user_table: Type[Student],
+        user_table: Type[UserIdentity],
         oauth_account_table: Optional[
             Type[SQLAlchemyBaseOAuthAccountTable[int]]
         ] = None,
     ) -> None:
         super().__init__(session, user_table, oauth_account_table)
 
-    async def last(self) -> Optional[Student]:
-        stmt = select(Student.id).order_by(Student.id.desc())
+    async def last(self) -> Optional[UserIdentity]:
+        stmt = select(UserIdentity.id).order_by(UserIdentity.id.desc())
         last_id = await self.session.scalar(stmt)
         if last_id is None:
             return None
