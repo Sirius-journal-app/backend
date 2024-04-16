@@ -32,3 +32,6 @@ class Group(Base):  # type: ignore[misc]
 
     students: Mapped[list["Student"]] = relationship(back_populates="group")
     classes: Mapped[list["Class"]] = relationship(back_populates="group")
+
+    def __str__(self) -> str:
+        return self.name

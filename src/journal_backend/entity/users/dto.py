@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Any
 
 from fastapi_users import schemas
@@ -13,6 +14,9 @@ class UserRead(schemas.BaseUser[int]):
 class UserCreate(schemas.BaseUserCreate):
     name: str
     surname: str
+    date_of_birth: date
+    email: str
+    password: str
     role: Role
 
 

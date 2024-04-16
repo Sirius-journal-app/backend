@@ -1,15 +1,22 @@
 import fastapi_users
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from fastapi_users import FastAPIUsers
+from fastapi_users.jwt import decode_jwt
 from fastapi_users.authentication import Authenticator, BearerTransport, AuthenticationBackend, JWTStrategy
+from jwt import InvalidSignatureError, InvalidTokenError
+from pydantic import SecretStr
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
 from journal_backend.entity.users.models import UserIdentity
 from journal_backend.entity.users.repository import UserRepository
 from journal_backend.entity.users.service import UserService
+
+JWT_ALGORITHM = "HS256"
+JWT_AUDIENCE = "fastapi-users:auth"
 
 
 async def get_user_repository(
@@ -45,7 +52,24 @@ fastapi_users_inst = FastAPIUsers(
 
 ouath2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 
-# current_user = fastapi_users_inst.current_user(active=True)
 
-def current_user(token: str = Depends(ouath2_scheme)):
-    return token
+async def current_user(
+        token: str = Depends(ouath2_scheme),
+        cfg: Config = Depends(Stub(Config)),
+        user_repo: UserRepository = Depends(Stub(UserRepository))
+):
+    try:
+        user_id = int(decode_jwt(
+            encoded_jwt=token,
+            secret=SecretStr(cfg.app.jwt_secret),
+            audience=[JWT_AUDIENCE],
+            algorithms=[JWT_ALGORITHM],
+        )['sub'])
+    except (InvalidTokenError, KeyError, ValueError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid auth token"
+        )
+
+    user = await user_repo.get(user_id)
+    return user

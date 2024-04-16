@@ -10,7 +10,7 @@ from journal_backend.entity.users import exceptions
 router = APIRouter(prefix="/teachers")
 
 
-@router.post("/register")
+@router.post("")
 async def register(
         teacher_body: TeacherCreate,
         teacher_service: TeacherService = Depends(Stub(TeacherService))
@@ -22,4 +22,4 @@ async def register(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
-    return teacher
+    return teacher.id

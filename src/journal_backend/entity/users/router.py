@@ -24,10 +24,6 @@ router.include_router(
     tags=["users"],
 )
 
-# router.include_router(
-#     get_register_router(get_user_service, UserRead, UserCreate),
-#     tags=["users"],
-# )
 
 router.include_router(
     get_reset_password_router(get_user_service),

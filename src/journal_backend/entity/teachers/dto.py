@@ -1,7 +1,8 @@
+from dataclasses import field
 from datetime import date
 
 from fastapi_users import schemas
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, EmailStr
 
 
 class TeacherRead(schemas.BaseUser[int]):
@@ -16,11 +17,11 @@ class TeacherCreate(BaseModel):
     name: str
     surname: str
     date_of_birth: date
-    email: str
+    email: EmailStr
     password: str
     qualification: str
     education: str
-    competencies: list[str]
+    competencies: list[str] = Field(default_factory=list)
 
 
 class TeacherUpdate(schemas.BaseUserUpdate):
