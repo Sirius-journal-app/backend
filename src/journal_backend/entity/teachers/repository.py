@@ -12,8 +12,8 @@ from journal_backend.entity.teachers.models import Teacher, Subject
 
 class TeacherRepository:
     def __init__(
-        self,
-        session: AsyncSession,
+            self,
+            session: AsyncSession,
     ) -> None:
         self.session = session
 
@@ -31,3 +31,7 @@ class TeacherRepository:
             return Subject(name=name)
         return subject
 
+    async def get_by_id(self, teacher_id: int) -> Teacher:
+        stmt = select(Teacher).where(Teacher.id == teacher_id)
+        student = await self.session.scalar(stmt)
+        return student

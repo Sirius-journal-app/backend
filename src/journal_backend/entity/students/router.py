@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi_users.fastapi_users import (  # type: ignore[attr-defined]
     get_auth_router,
@@ -34,10 +36,13 @@ async def register(
 
 @router.get("/{student_id}")
 async def retrieve_student(
-        student_id: int,
+        student_id: int  | Literal["me"],
         caller: UserIdentity = Depends(current_user),
         student_service: StudentService = Depends(Stub(StudentService))
 ):
+    if student_id == "me":
+        student_id = caller.id
+
     try:
         student = await student_service.get_by_id(student_id, caller)
     except exceptions.StudentNotFound as e:

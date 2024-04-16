@@ -1,15 +1,13 @@
 from passlib.context import CryptContext
 
 from journal_backend.entity.teachers.dto import TeacherCreate
-from journal_backend.entity.teachers.models import Teacher, Competence, Subject
+from journal_backend.entity.teachers.models import Teacher, Competence
 from journal_backend.entity.teachers.repository import TeacherRepository
-from journal_backend.entity.users import exceptions
+from journal_backend.entity.teachers import exceptions
 from journal_backend.entity.users.enums import Role
+from journal_backend.entity.users.exceptions import UserAlreadyExists
+from journal_backend.entity.users.models import UserIdentity
 from journal_backend.entity.users.repository import UserRepository
-
-
-def hash_string(string: str) -> str:
-    return str(hash(string))  # temp stub
 
 
 class TeacherService:
@@ -25,7 +23,7 @@ class TeacherService:
     async def create(self, teacher_create: TeacherCreate) -> Teacher:
         existing = await self.user_repo.get_by_email(email=teacher_create.email)
         if existing:
-            raise exceptions.UserAlreadyExists
+            raise UserAlreadyExists
 
         identity = await self.user_repo.create(
             {
@@ -52,3 +50,13 @@ class TeacherService:
             ]
         )
         return new_teacher
+
+    async def get_by_id(self, teacher_id: int, caller: UserIdentity) -> Teacher:
+        if caller.role != Role.ADMIN and teacher_id != caller.id:
+            raise exceptions.TeacherPermissionError
+
+        teacher = await self.repo.get_by_id(teacher_id)
+        if not teacher:
+            raise exceptions.TeacherNotFound
+
+        return teacher
