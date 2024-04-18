@@ -69,4 +69,8 @@ class StudentService:
         if not student:
             raise exceptions.StudentNotFound
 
+        if not student.academic_reports:
+            student.academic_reports = []
+
         return student.academic_reports
+

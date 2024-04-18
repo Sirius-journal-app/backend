@@ -23,7 +23,7 @@ router = APIRouter(prefix="/students", tags=["students"])
 async def register(
         student_body: StudentCreate,
         student_service: StudentService = Depends(Stub(StudentService))
-):
+) -> int:
     try:
         student = await student_service.create(student_create=student_body)
     except u_exceptions.UserAlreadyExists as e:
@@ -36,10 +36,10 @@ async def register(
 
 @router.get("/{student_id}")
 async def retrieve_student(
-        student_id: int  | Literal["me"],
+        student_id: int | Literal["me"],
         caller: UserIdentity = Depends(current_user),
         student_service: StudentService = Depends(Stub(StudentService))
-):
+) -> StudentRead:
     if student_id == "me":
         student_id = caller.id
 
@@ -68,17 +68,17 @@ async def retrieve_student(
     )
 
 
-# @router.get("/{student_id}/academic_reports")
-# async def get_student_academic_reports(
-#         student_id: int,
-#         caller: UserIdentity = Depends(current_user),
-#         student_service: StudentService = Depends(Stub(StudentService))
-# ):
-#     try:
-#         reports = await student_service.get_academic_reports_by_id(student_id, caller)
-#     except exceptions.StudentNotFound as e:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail=str(e)
-#         )
-#     return reports
+@router.get("/{student_id}/academic_reports")
+async def get_student_academic_reports(
+        student_id: int,
+        caller: UserIdentity = Depends(current_user),
+        student_service: StudentService = Depends(Stub(StudentService))
+):
+    try:
+        reports = await student_service.get_academic_reports_by_id(student_id, caller)
+    except exceptions.StudentNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    return reports

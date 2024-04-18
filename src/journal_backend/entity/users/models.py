@@ -9,7 +9,7 @@ from journal_backend.database.base import Base
 from journal_backend.entity.users.enums import Role
 
 
-class UserIdentity(SQLAlchemyBaseUserTable, Base):
+class UserIdentity(SQLAlchemyBaseUserTable, Base):  # type:ignore[misc]
     __tablename__ = "user_identity"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -31,4 +31,3 @@ class UserIdentity(SQLAlchemyBaseUserTable, Base):
 
     # can be defined by the role (this is a stub for fastapi-users)
     is_superuser: bool = False
-

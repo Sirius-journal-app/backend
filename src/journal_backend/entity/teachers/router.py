@@ -61,3 +61,20 @@ async def retrieve_teacher(
         education=teacher.education,
         is_verified=teacher.identity.is_verified,
     )
+
+
+@router.get("/{teacher_id}/competencies")
+async def get_teacher_competencies(
+        teacher_id: int,
+        caller: UserIdentity = Depends(current_user),
+        teacher_service: TeacherService = Depends(Stub(TeacherService))
+):
+    try:
+        competencies = await teacher_service.get_competencies(teacher_id, caller)
+    except exceptions.TeacherPermissionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e)
+        )
+    return competencies
+

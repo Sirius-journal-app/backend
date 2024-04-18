@@ -2,9 +2,8 @@ from dataclasses import dataclass
 from datetime import datetime, date
 from typing import Optional, Any
 
-from fastapi_users import schemas
 from fastapi_users.schemas import CreateUpdateDictModel
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, EmailStr
 
 
 @dataclass(frozen=True, kw_only=True)

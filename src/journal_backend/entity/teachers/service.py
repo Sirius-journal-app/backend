@@ -60,3 +60,10 @@ class TeacherService:
             raise exceptions.TeacherNotFound
 
         return teacher
+
+    async def get_competencies(self, teacher_id: int, caller: UserIdentity) -> list[Competence]:
+        if caller.role != Role.ADMIN and teacher_id != caller.id:
+            raise exceptions.TeacherPermissionError
+
+        teacher = await self.repo.get_by_id(teacher_id)
+        return teacher.competencies

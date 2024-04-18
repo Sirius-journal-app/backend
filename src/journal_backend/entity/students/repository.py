@@ -18,7 +18,7 @@ class StudentRepository:
         await self.session.refresh(student)
         return student
 
-    async def get_by_id(self, student_id) -> Student:
+    async def get_by_id(self, student_id: int) -> Student:
         stmt = select(Student).where(Student.id == student_id)
         student = await self.session.scalar(stmt)
         return student

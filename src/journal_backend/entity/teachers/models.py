@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from sqlalchemy import ForeignKey, PrimaryKeyConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -17,7 +17,7 @@ class Teacher(Base):  # type: ignore[misc]
     education: Mapped[Optional[str]] = mapped_column()
 
     identity: Mapped["UserIdentity"] = relationship(lazy="joined")
-    competencies: Mapped[list["Competence"]] = relationship(back_populates="teacher")
+    competencies: Mapped[list["Competence"]] = relationship(back_populates="teacher", lazy="joined")
     classes: Mapped[list["Class"]] = relationship(back_populates="teacher")
 
 
