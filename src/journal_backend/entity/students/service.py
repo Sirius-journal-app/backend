@@ -1,5 +1,7 @@
+from fastapi_users import jwt
 from passlib.context import CryptContext
 
+from journal_backend.config import AppConfig
 from journal_backend.entity.academic_reports.models import AcademicReport
 from journal_backend.entity.students.dto import StudentCreate
 from journal_backend.entity.students.models import Student
@@ -21,7 +23,7 @@ class StudentService:
         self.user_repo = user_repo
         self.context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    async def create(self, student_create: StudentCreate) -> Student:
+    async def create(self, student_create: StudentCreate, app_cfg: AppConfig) -> (str, Student):
         existing = await self.user_repo.get_by_email(email=student_create.email)
         if existing:
             raise u_exceptions.UserAlreadyExists
@@ -49,7 +51,14 @@ class StudentService:
             admission_year=student_create.admission_year,
             group=group,
         )
-        return new_student
+
+        auth_token = jwt.generate_jwt(
+            data={"sub": new_student.id},
+            secret=app_cfg.jwt_secret,
+            lifetime_seconds=app_cfg.jwt_lifetime_seconds
+        )
+
+        return auth_token, new_student
 
     async def get_by_id(self, student_id: int, caller: UserIdentity) -> Student:
         if caller.role == Role.STUDENT and caller.id != student_id:

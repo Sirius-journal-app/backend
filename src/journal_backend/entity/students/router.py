@@ -8,10 +8,11 @@ from fastapi_users.fastapi_users import (  # type: ignore[attr-defined]
 )
 from starlette import status
 
+from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
 from journal_backend.entity.students import exceptions
 from journal_backend.entity.users import exceptions as u_exceptions
-from journal_backend.entity.students.dto import StudentRead, StudentCreate
+from journal_backend.entity.students.dto import StudentRead, StudentCreate, AuthResponse, model_to_read_dto
 from journal_backend.entity.students.service import StudentService
 from journal_backend.entity.users.dependencies import current_user
 from journal_backend.entity.users.models import UserIdentity
@@ -22,16 +23,20 @@ router = APIRouter(prefix="/students", tags=["students"])
 @router.post("")
 async def register(
         student_body: StudentCreate,
-        student_service: StudentService = Depends(Stub(StudentService))
-) -> int:
+        student_service: StudentService = Depends(Stub(StudentService)),
+        cfg: Config = Depends(Stub(Config)),
+):
     try:
-        student = await student_service.create(student_create=student_body)
+        auth_token, student = await student_service.create(student_create=student_body, app_cfg=cfg.app)
     except u_exceptions.UserAlreadyExists as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
-    return student.id
+    return AuthResponse(
+        token=auth_token,
+        student=model_to_read_dto(student)
+    )
 
 
 @router.get("/{student_id}")
@@ -56,16 +61,7 @@ async def retrieve_student(
             detail=str(e),
         )
 
-    return StudentRead(
-        name=student.identity.name,
-        surname=student.identity.surname,
-        email=student.identity.email,
-        profile_photo_uri=student.identity.profile_photo_uri,
-        birth_date=student.identity.date_of_birth,
-        admission_year=student.admission_year,
-        group=student.group,
-        is_verified=student.identity.is_verified,
-    )
+    return model_to_read_dto(student)
 
 
 @router.get("/{student_id}/academic_reports")

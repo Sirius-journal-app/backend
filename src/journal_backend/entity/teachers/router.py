@@ -3,8 +3,9 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
+from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.teachers.dto import TeacherCreate, TeacherRead
+from journal_backend.entity.teachers.dto import TeacherCreate, AuthResponse, model_to_read_dto
 from journal_backend.entity.teachers.service import TeacherService
 from journal_backend.entity.teachers import exceptions
 from journal_backend.entity.users import exceptions as u_exceptions
@@ -17,16 +18,20 @@ router = APIRouter(prefix="/teachers", tags=['teachers'])
 @router.post("")
 async def register(
         teacher_body: TeacherCreate,
-        teacher_service: TeacherService = Depends(Stub(TeacherService))
+        teacher_service: TeacherService = Depends(Stub(TeacherService)),
+        cfg: Config = Depends(Stub(Config)),
 ):
     try:
-        teacher = await teacher_service.create(teacher_create=teacher_body)
+        auth_token, teacher = await teacher_service.create(teacher_create=teacher_body, app_cfg=cfg.app)
     except u_exceptions.UserAlreadyExists as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
-    return teacher.id
+    return AuthResponse(
+        token=auth_token,
+        teacher=model_to_read_dto(teacher)
+    )
 
 
 @router.get("/{teacher_id}")
@@ -51,16 +56,7 @@ async def retrieve_teacher(
             detail=str(e),
         )
 
-    return TeacherRead(
-        name=teacher.identity.name,
-        surname=teacher.identity.surname,
-        email=teacher.identity.email,
-        profile_photo_uri=teacher.identity.profile_photo_uri,
-        birth_date=teacher.identity.date_of_birth,
-        qualification=teacher.qualification,
-        education=teacher.education,
-        is_verified=teacher.identity.is_verified,
-    )
+    return model_to_read_dto(teacher)
 
 
 @router.get("/{teacher_id}/competencies")
@@ -77,4 +73,3 @@ async def get_teacher_competencies(
             detail=str(e)
         )
     return competencies
-

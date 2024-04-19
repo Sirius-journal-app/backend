@@ -1,5 +1,7 @@
+from fastapi_users import jwt
 from passlib.context import CryptContext
 
+from journal_backend.config import AppConfig
 from journal_backend.entity.teachers.dto import TeacherCreate
 from journal_backend.entity.teachers.models import Teacher, Competence
 from journal_backend.entity.teachers.repository import TeacherRepository
@@ -20,7 +22,7 @@ class TeacherService:
         self.user_repo = user_repo
         self.context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    async def create(self, teacher_create: TeacherCreate) -> Teacher:
+    async def create(self, teacher_create: TeacherCreate, app_cfg: AppConfig) -> (str, Teacher):
         existing = await self.user_repo.get_by_email(email=teacher_create.email)
         if existing:
             raise UserAlreadyExists
@@ -49,7 +51,14 @@ class TeacherService:
                 for subject_name in teacher_create.competencies
             ]
         )
-        return new_teacher
+
+        auth_token = jwt.generate_jwt(
+            data={"sub": new_teacher.id},
+            secret=app_cfg.jwt_secret,
+            lifetime_seconds=app_cfg.jwt_lifetime_seconds
+        )
+
+        return auth_token, new_teacher
 
     async def get_by_id(self, teacher_id: int, caller: UserIdentity) -> Teacher:
         if caller.role != Role.ADMIN and teacher_id != caller.id:

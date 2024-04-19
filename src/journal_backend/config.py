@@ -7,8 +7,8 @@ import toml
 logger = logging.getLogger(__name__)
 
 # You can replace this consts values with your own awesome ones :D
-DEFAULT_APP_TITLE: str = "fastapi-blog"
-DEFAULT_APP_DESCRIPTION: str = "A sample blog developed using FastAPI"
+DEFAULT_APP_TITLE: str = "journal_backend"
+DEFAULT_APP_DESCRIPTION: str = "Backend for the sirius-journal."
 DEFAULT_SERVER_HOST: str = "0.0.0.0"
 DEFAULT_SERVER_PORT: int = 8000
 DEFAULT_SERVER_LOG_LEVEL: str = "info"
@@ -27,6 +27,7 @@ class AppConfig:
     title: str = DEFAULT_APP_TITLE
     description: str = DEFAULT_APP_DESCRIPTION
     jwt_secret: str  # type: ignore[misc]
+    jwt_lifetime_seconds: int = 60 * 60
 
 
 @dataclass

@@ -1,8 +1,10 @@
-from dataclasses import field, dataclass
+from dataclasses import dataclass
 from datetime import date
 
 from fastapi_users import schemas
 from pydantic import BaseModel, Field, EmailStr
+
+from journal_backend.entity.teachers.models import Teacher
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -30,3 +32,22 @@ class TeacherCreate(BaseModel):
 
 class TeacherUpdate(schemas.BaseUserUpdate):
     pass
+
+
+@dataclass(frozen=True, kw_only=True)
+class AuthResponse:
+    token: str
+    teacher: TeacherRead
+
+
+def model_to_read_dto(teacher: Teacher) -> TeacherRead:
+    return TeacherRead(
+        name=teacher.identity.name,
+        surname=teacher.identity.surname,
+        email=teacher.identity.email,
+        profile_photo_uri=teacher.identity.profile_photo_uri,
+        birth_date=teacher.identity.date_of_birth,
+        qualification=teacher.qualification,
+        education=teacher.education,
+        is_verified=teacher.identity.is_verified,
+    )
