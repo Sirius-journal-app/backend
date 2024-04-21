@@ -1,8 +1,8 @@
 from .academic_reports.models import AcademicReport
 from .classes.models import Class, Classroom
-from .users.models import UserIdentity
+from .students.models import Group, Student
 from .teachers.models import Competence, Subject, Teacher
-from .students.models import Student, Group
+from .users.models import UserIdentity
 
 __all__ = (
     "AcademicReport",

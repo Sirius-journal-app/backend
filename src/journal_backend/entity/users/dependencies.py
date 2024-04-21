@@ -1,10 +1,14 @@
-import fastapi_users
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from fastapi_users import FastAPIUsers
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+    Authenticator,
+    BearerTransport,
+    JWTStrategy,
+)
 from fastapi_users.jwt import decode_jwt
-from fastapi_users.authentication import Authenticator, BearerTransport, AuthenticationBackend, JWTStrategy
-from jwt import InvalidSignatureError, InvalidTokenError
+from jwt import InvalidTokenError
 from pydantic import SecretStr
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
@@ -57,7 +61,7 @@ async def current_user(
         token: str = Depends(ouath2_scheme),
         cfg: Config = Depends(Stub(Config)),
         user_repo: UserRepository = Depends(Stub(UserRepository))
-):
+) -> UserIdentity:
     try:
         user_id = int(decode_jwt(
             encoded_jwt=token,

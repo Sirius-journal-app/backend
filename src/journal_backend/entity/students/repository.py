@@ -1,7 +1,12 @@
+from datetime import date
+from typing import Any, Sequence
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from journal_backend.entity.students.models import Student, Group
+from journal_backend.entity.academic_reports.models import AcademicReport
+from journal_backend.entity.classes.models import Class
+from journal_backend.entity.students.models import Group, Student
 
 
 class StudentRepository:
@@ -11,7 +16,7 @@ class StudentRepository:
     ) -> None:
         self.session = session
 
-    async def create(self, **creds) -> Student:
+    async def create(self, **creds: Any) -> Student:
         student = Student(**creds)
         self.session.add(student)
         await self.session.commit()
@@ -27,3 +32,19 @@ class StudentRepository:
         stmt = select(Group).where(Group.name == name)
         group = await self.session.scalar(stmt)
         return group
+
+    async def get_academic_reports_by_id(
+            self,
+            student_id: int,
+            d_left: date,
+            d_right: date
+    ) -> Sequence[AcademicReport]:
+        stmt = (
+            select(AcademicReport).
+            join(Class, onclause=Class.id == AcademicReport.lesson_id).
+            where(AcademicReport.student_id == student_id).
+            where(Class.starts_at.between(d_left, d_right))
+        )
+
+        res = await self.session.scalars(stmt)
+        return res.all()

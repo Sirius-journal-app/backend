@@ -5,7 +5,6 @@ from sqlalchemy import DateTime, ForeignKey, ForeignKeyConstraint, Interval
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from journal_backend.database.base import Base
-
 from journal_backend.entity.academic_reports.models import AcademicReport
 
 if TYPE_CHECKING:

@@ -1,13 +1,9 @@
-from typing import Optional, Type
+from typing import Any
 
-from fastapi_users_db_sqlalchemy import (
-    SQLAlchemyBaseOAuthAccountTable,
-    SQLAlchemyUserDatabase,
-)
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from journal_backend.entity.teachers.models import Teacher, Subject
+from journal_backend.entity.teachers.models import Subject, Teacher
 
 
 class TeacherRepository:
@@ -17,7 +13,7 @@ class TeacherRepository:
     ) -> None:
         self.session = session
 
-    async def create(self, **creds) -> Teacher:
+    async def create(self, **creds: Any) -> Teacher:
         teacher = Teacher(**creds)
         self.session.add(teacher)
         await self.session.commit()
@@ -33,5 +29,5 @@ class TeacherRepository:
 
     async def get_by_id(self, teacher_id: int) -> Teacher:
         stmt = select(Teacher).where(Teacher.id == teacher_id)
-        student = await self.session.scalar(stmt)
-        return student
+        teacher = await self.session.scalar(stmt)
+        return teacher

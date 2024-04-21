@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from datetime import date
+from typing import Optional
 
 from fastapi_users import schemas
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from journal_backend.entity.teachers.models import Teacher
 
@@ -11,8 +12,8 @@ from journal_backend.entity.teachers.models import Teacher
 class TeacherRead:
     name: str
     surname: str
-    profile_photo_uri: str
-    birth_date: date
+    profile_photo_uri: str = ""
+    birth_date: Optional[date] = None
     qualification: str
     education: str
     email: str
@@ -22,7 +23,7 @@ class TeacherRead:
 class TeacherCreate(BaseModel):
     name: str
     surname: str
-    date_of_birth: date
+    date_of_birth: Optional[date] = None
     email: EmailStr
     password: str
     qualification: str

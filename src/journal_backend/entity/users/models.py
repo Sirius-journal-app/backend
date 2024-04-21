@@ -1,15 +1,14 @@
 from datetime import date
 from typing import Optional
 
-from fastapi_users.db import SQLAlchemyBaseUserTable
-from sqlalchemy import DateTime, String, Boolean
+from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from journal_backend.database.base import Base
 from journal_backend.entity.users.enums import Role
 
 
-class UserIdentity(SQLAlchemyBaseUserTable, Base):  # type:ignore[misc]
+class UserIdentity(Base):  # type:ignore[misc]
     __tablename__ = "user_identity"
 
     id: Mapped[int] = mapped_column(primary_key=True)

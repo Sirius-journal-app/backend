@@ -9,12 +9,13 @@ logger = logging.getLogger(__name__)
 # You can replace this consts values with your own awesome ones :D
 DEFAULT_APP_TITLE: str = "journal_backend"
 DEFAULT_APP_DESCRIPTION: str = "Backend for the sirius-journal."
+DEFAULT_APP_VERSION: str = "0.0.1"
 DEFAULT_SERVER_HOST: str = "0.0.0.0"
 DEFAULT_SERVER_PORT: int = 8000
 DEFAULT_SERVER_LOG_LEVEL: str = "info"
 
 
-@dataclass(kw_only=True)  # type: ignore[call-overload]
+@dataclass(kw_only=True)
 class AppConfig:
     """Represent the application configuration.
 
@@ -26,7 +27,8 @@ class AppConfig:
 
     title: str = DEFAULT_APP_TITLE
     description: str = DEFAULT_APP_DESCRIPTION
-    jwt_secret: str  # type: ignore[misc]
+    version: str = DEFAULT_APP_VERSION
+    jwt_secret: str
     jwt_lifetime_seconds: int = 60 * 60
 
 

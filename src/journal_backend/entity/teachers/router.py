@@ -5,9 +5,19 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.teachers.dto import TeacherCreate, AuthResponse, model_to_read_dto
-from journal_backend.entity.teachers.service import TeacherService
+from journal_backend.entity.common.pagination import (
+    PaginationResponse,
+    generate_pagination_response,
+)
 from journal_backend.entity.teachers import exceptions
+from journal_backend.entity.teachers.dto import (
+    AuthResponse,
+    TeacherCreate,
+    TeacherRead,
+    model_to_read_dto,
+)
+from journal_backend.entity.teachers.models import Competence
+from journal_backend.entity.teachers.service import TeacherService
 from journal_backend.entity.users import exceptions as u_exceptions
 from journal_backend.entity.users.dependencies import current_user
 from journal_backend.entity.users.models import UserIdentity
@@ -20,9 +30,12 @@ async def register(
         teacher_body: TeacherCreate,
         teacher_service: TeacherService = Depends(Stub(TeacherService)),
         cfg: Config = Depends(Stub(Config)),
-):
+) -> AuthResponse:
     try:
-        auth_token, teacher = await teacher_service.create(teacher_create=teacher_body, app_cfg=cfg.app)
+        auth_token, teacher = await teacher_service.create(
+            teacher_create=teacher_body,
+            app_cfg=cfg.app
+        )
     except u_exceptions.UserAlreadyExists as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -39,7 +52,7 @@ async def retrieve_teacher(
         teacher_id: int | Literal["me"],
         caller: UserIdentity = Depends(current_user),
         teacher_service: TeacherService = Depends(Stub(TeacherService))
-):
+) -> TeacherRead:
     if teacher_id == 'me':
         teacher_id = caller.id
 
@@ -62,14 +75,24 @@ async def retrieve_teacher(
 @router.get("/{teacher_id}/competencies")
 async def get_teacher_competencies(
         teacher_id: int,
+        offset: int = 0,
+        limit: int = 10,
         caller: UserIdentity = Depends(current_user),
         teacher_service: TeacherService = Depends(Stub(TeacherService))
-):
+) -> PaginationResponse:
     try:
-        competencies = await teacher_service.get_competencies(teacher_id, caller)
+        competencies: list[Competence] = await teacher_service.get_competencies(
+            teacher_id,
+            caller
+        )
     except exceptions.TeacherPermissionError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e)
         )
-    return competencies
+    return generate_pagination_response(
+        uri_prefix=f"{router.prefix}/{teacher_id}/competencies",
+        offset=offset,
+        limit=limit,
+        data=competencies,
+    )

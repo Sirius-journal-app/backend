@@ -1,9 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.teachers.models import Teacher
 from journal_backend.entity.teachers.repository import TeacherRepository
 from journal_backend.entity.teachers.service import TeacherService
 from journal_backend.entity.users.repository import UserRepository

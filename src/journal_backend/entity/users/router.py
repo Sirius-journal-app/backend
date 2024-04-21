@@ -1,12 +1,16 @@
 from fastapi import APIRouter
 from fastapi_users.fastapi_users import (  # type: ignore[attr-defined]
     get_auth_router,
-    get_register_router,
     get_users_router,
 )
 from fastapi_users.router import get_reset_password_router, get_verify_router
-from journal_backend.entity.users.dependencies import authenticator, auth_backend, get_user_service
-from journal_backend.entity.users.dto import UserRead, UserUpdate, UserCreate
+
+from journal_backend.entity.users.dependencies import (
+    auth_backend,
+    authenticator,
+    get_user_service,
+)
+from journal_backend.entity.users.dto import UserRead, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
 

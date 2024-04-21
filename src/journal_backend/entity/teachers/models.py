@@ -4,20 +4,25 @@ from sqlalchemy import ForeignKey, PrimaryKeyConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from journal_backend.database.base import Base
-from journal_backend.entity.users.models import UserIdentity
-
 from journal_backend.entity.classes.models import Class
+from journal_backend.entity.users.models import UserIdentity
 
 
 class Teacher(Base):  # type: ignore[misc]
     __tablename__ = "teachers"
 
-    id: Mapped[int] = mapped_column(ForeignKey("user_identity.id", ondelete="CASCADE"), primary_key=True)
+    id: Mapped[int] = mapped_column(
+        ForeignKey("user_identity.id", ondelete="CASCADE"),
+        primary_key=True
+    )
     qualification: Mapped[Optional[str]] = mapped_column()
     education: Mapped[Optional[str]] = mapped_column()
 
     identity: Mapped["UserIdentity"] = relationship(lazy="joined")
-    competencies: Mapped[list["Competence"]] = relationship(back_populates="teacher", lazy="joined")
+    competencies: Mapped[list["Competence"]] = relationship(
+        back_populates="teacher",
+        lazy="joined"
+    )
     classes: Mapped[list["Class"]] = relationship(back_populates="teacher")
 
 

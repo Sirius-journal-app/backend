@@ -2,10 +2,10 @@ from fastapi_users import jwt
 from passlib.context import CryptContext
 
 from journal_backend.config import AppConfig
-from journal_backend.entity.teachers.dto import TeacherCreate
-from journal_backend.entity.teachers.models import Teacher, Competence
-from journal_backend.entity.teachers.repository import TeacherRepository
 from journal_backend.entity.teachers import exceptions
+from journal_backend.entity.teachers.dto import TeacherCreate
+from journal_backend.entity.teachers.models import Competence, Teacher
+from journal_backend.entity.teachers.repository import TeacherRepository
 from journal_backend.entity.users.enums import Role
 from journal_backend.entity.users.exceptions import UserAlreadyExists
 from journal_backend.entity.users.models import UserIdentity
@@ -22,7 +22,11 @@ class TeacherService:
         self.user_repo = user_repo
         self.context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-    async def create(self, teacher_create: TeacherCreate, app_cfg: AppConfig) -> (str, Teacher):
+    async def create(
+            self,
+            teacher_create: TeacherCreate,
+            app_cfg: AppConfig
+    ) -> tuple[str, Teacher]:
         existing = await self.user_repo.get_by_email(email=teacher_create.email)
         if existing:
             raise UserAlreadyExists
@@ -75,4 +79,7 @@ class TeacherService:
             raise exceptions.TeacherPermissionError
 
         teacher = await self.repo.get_by_id(teacher_id)
-        return teacher.competencies
+        if not teacher:
+            raise exceptions.TeacherNotFound
+
+        return teacher.competencies  # type:ignore[no-any-return]

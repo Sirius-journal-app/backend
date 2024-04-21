@@ -1,4 +1,4 @@
-from typing import Optional, Type
+from typing import Any, Dict, Optional, Type
 
 from fastapi_users_db_sqlalchemy import (
     SQLAlchemyBaseOAuthAccountTable,
@@ -12,14 +12,21 @@ from journal_backend.entity.users.models import UserIdentity
 
 class UserRepository(SQLAlchemyUserDatabase[UserIdentity, int]):
     def __init__(
-        self,
-        session: AsyncSession,
-        user_table: Type[UserIdentity],
-        oauth_account_table: Optional[
-            Type[SQLAlchemyBaseOAuthAccountTable[int]]
-        ] = None,
+            self,
+            session: AsyncSession,
+            user_table: Type[UserIdentity],
+            oauth_account_table: Optional[
+                Type[SQLAlchemyBaseOAuthAccountTable[int]]
+            ] = None,
     ) -> None:
         super().__init__(session, user_table, oauth_account_table)
+
+    async def create(self, create_dict: Dict[str, Any]) -> UserIdentity:
+        user = self.user_table(**create_dict)
+        self.session.add(user)
+        await self.session.flush([user])
+        await self.session.refresh(user)
+        return user
 
     async def last(self) -> Optional[UserIdentity]:
         stmt = select(UserIdentity.id).order_by(UserIdentity.id.desc())

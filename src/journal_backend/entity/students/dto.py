@@ -1,11 +1,17 @@
 from dataclasses import dataclass
-from datetime import datetime, date
-from typing import Optional, Any
+from datetime import date, datetime
+from typing import Any, Optional
 
-from fastapi_users.schemas import CreateUpdateDictModel
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
 
 from journal_backend.entity.students.models import Student
+
+
+@dataclass
+class Group:
+    id: int
+    name: str
+    admission_year: int
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -15,8 +21,7 @@ class StudentRead:
     email: str
     profile_photo_uri: str
     birth_date: Optional[datetime] = None
-    admission_year: Optional[int] = None
-    group: Optional[str] = None
+    group: Optional[Group] = None
     is_verified: bool
 
 
@@ -41,13 +46,20 @@ class AuthResponse:
 
 
 def model_to_read_dto(student: Student) -> StudentRead:
+    group = None
+    if student.group:
+        group = Group(
+            id=student.group.id,
+            name=student.group.name,
+            admission_year=student.group.admission_year,
+        )
+
     return StudentRead(
         name=student.identity.name,
         surname=student.identity.surname,
         email=student.identity.email,
         profile_photo_uri=student.identity.profile_photo_uri,
         birth_date=student.identity.date_of_birth,
-        admission_year=student.admission_year,
-        group=student.group,
+        group=group,
         is_verified=student.identity.is_verified,
     )

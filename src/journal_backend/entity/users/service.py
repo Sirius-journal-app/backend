@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 
 from fastapi import Request
 from fastapi_users import BaseUserManager, IntegerIDMixin

@@ -1,12 +1,13 @@
 """Contain stub for FastAPI app dependencies."""
-from typing import Any, Callable, Dict, Hashable, NoReturn
+from typing import Any, Dict, Hashable, NoReturn
 
 
 class Stub:
     """Represent stub for app dependencies."""
+
     def __init__(
         self,
-        dependency: Any,  # type: ignore[misc]
+        dependency: Any,
         **kwargs: Dict[Hashable, Any],
     ) -> None:
         self._dependency = dependency
