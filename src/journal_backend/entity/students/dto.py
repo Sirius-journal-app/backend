@@ -16,6 +16,7 @@ class Group:
 
 @dataclass(frozen=True, kw_only=True)
 class StudentRead:
+    id: int
     name: str
     surname: str
     email: str
@@ -55,6 +56,7 @@ def model_to_read_dto(student: Student) -> StudentRead:
         )
 
     return StudentRead(
+        id=student.identity.id,
         name=student.identity.name,
         surname=student.identity.surname,
         email=student.identity.email,

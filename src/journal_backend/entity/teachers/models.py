@@ -44,7 +44,7 @@ class Competence(Base):  # type: ignore[misc]
     subject_id: Mapped[int] = mapped_column(ForeignKey("subjects.id", ondelete="CASCADE"))
 
     teacher: Mapped["Teacher"] = relationship(back_populates="competencies")
-    subject: Mapped["Subject"] = relationship(back_populates="competents")
+    subject: Mapped["Subject"] = relationship(back_populates="competents", lazy='joined')
 
     __table_args__ = (
         PrimaryKeyConstraint("teacher_id", "subject_id"),

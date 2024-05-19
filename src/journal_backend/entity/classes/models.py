@@ -31,10 +31,10 @@ class Class(Base):  # type: ignore[misc]
     )
 
     academic_reports: Mapped[list["AcademicReport"]] = relationship(back_populates="lesson")
-    group: Mapped["Group"] = relationship(back_populates="classes",)
-    teacher: Mapped["Teacher"] = relationship(back_populates="classes")
-    subject: Mapped["Subject"] = relationship(back_populates="classes")
-    classroom: Mapped["Classroom"] = relationship(back_populates="classes")
+    group: Mapped["Group"] = relationship(back_populates="classes", lazy='joined')
+    teacher: Mapped["Teacher"] = relationship(back_populates="classes", lazy='joined')
+    subject: Mapped["Subject"] = relationship(back_populates="classes", lazy='joined')
+    classroom: Mapped["Classroom"] = relationship(back_populates="classes", lazy='joined')
 
     __table_args__ = (
         ForeignKeyConstraint(

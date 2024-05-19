@@ -5,6 +5,8 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
+from journal_backend.entity.academic_reports.dto import build_academic_reports_response
+from journal_backend.entity.classes.dto import build_schedule_response
 from journal_backend.entity.common.pagination import (
     PaginationResponse,
     generate_pagination_response,
@@ -84,7 +86,7 @@ async def get_student_weekly_schedule(
         student_service: StudentService = Depends(Stub(StudentService))
 ) -> PaginationResponse:
     try:
-        schedule = await student_service.get_schedule_by_id(student_id, offset, caller)
+        classes_by_days = await student_service.get_schedule_by_id(student_id, offset, caller)
     except exceptions.StudentNotFound as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -95,7 +97,7 @@ async def get_student_weekly_schedule(
         uri_prefix=f"{router.prefix}/{student_id}",
         offset=offset,
         limit=7,
-        data=schedule,
+        data=build_schedule_response(classes_by_days),
     )
 
 
@@ -117,5 +119,5 @@ async def get_student_academic_reports(
         uri_prefix=f"{router.prefix}/{student_id}",
         offset=offset,
         limit=7,
-        data=reports,
+        data=build_academic_reports_response(reports),
     )

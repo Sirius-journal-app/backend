@@ -87,7 +87,7 @@ class StudentService:
             student_id: int | Literal["me"],
             offset: int,
             caller: UserIdentity
-    ) -> list[DaySchedule]:
+    ) -> dict[int, DaySchedule]:
         if student_id == "me":
             student_id = caller.id
 
@@ -138,11 +138,11 @@ class StudentService:
         return reports
 
     @staticmethod
-    def _aggregate_classes(classes: list[Class]) -> list[DaySchedule]:
+    def _aggregate_classes(classes: list[Class]) -> dict[int, DaySchedule]:
         schedule_by_days: dict[int, Class] = {}
         for class_ in classes:
             weekday = class_.starts_at.weekday()
             if not schedule_by_days.get(weekday):
                 schedule_by_days[weekday] = []
             schedule_by_days[weekday].append(class_)
-        return list(schedule_by_days.values())
+        return schedule_by_days

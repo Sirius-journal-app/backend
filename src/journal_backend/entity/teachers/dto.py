@@ -52,3 +52,9 @@ def model_to_read_dto(teacher: Teacher) -> TeacherRead:
         education=teacher.education,
         is_verified=teacher.identity.is_verified,
     )
+
+
+@dataclass
+class TeacherCompetence:
+    subject: str
+

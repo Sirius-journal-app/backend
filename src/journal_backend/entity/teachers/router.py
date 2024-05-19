@@ -5,6 +5,7 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
+from journal_backend.entity.classes.dto import build_schedule_response
 from journal_backend.entity.common.pagination import (
     PaginationResponse,
     generate_pagination_response,
@@ -14,7 +15,7 @@ from journal_backend.entity.teachers.dto import (
     AuthResponse,
     TeacherCreate,
     TeacherRead,
-    model_to_read_dto,
+    model_to_read_dto, TeacherCompetence,
 )
 from journal_backend.entity.teachers.models import Competence
 from journal_backend.entity.teachers.service import TeacherService
@@ -72,14 +73,35 @@ async def retrieve_teacher(
     return model_to_read_dto(teacher)
 
 
-@router.get("/{teacher_id}/competencies")
-async def get_teacher_competencies(
-        teacher_id: int,
+@router.get("/{teacher_id}/schedule")
+async def get_teacher_weekly_schedule(
+        teacher_id: int | Literal["me"],
         offset: int = 0,
-        limit: int = 10,
         caller: UserIdentity = Depends(current_user),
         teacher_service: TeacherService = Depends(Stub(TeacherService))
 ) -> PaginationResponse:
+    try:
+        schedule = await teacher_service.get_schedule_by_id(teacher_id, offset, caller)
+    except exceptions.TeacherNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+
+    return generate_pagination_response(
+        uri_prefix=f"{router.prefix}/{teacher_id}",
+        offset=offset,
+        limit=7,
+        data=build_schedule_response(schedule),
+    )
+
+
+@router.get("/{teacher_id}/competencies")
+async def get_teacher_competencies(
+        teacher_id: int | Literal['me'],
+        caller: UserIdentity = Depends(current_user),
+        teacher_service: TeacherService = Depends(Stub(TeacherService))
+) -> list[str]:
     try:
         competencies: list[Competence] = await teacher_service.get_competencies(
             teacher_id,
@@ -90,9 +112,4 @@ async def get_teacher_competencies(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e)
         )
-    return generate_pagination_response(
-        uri_prefix=f"{router.prefix}/{teacher_id}/competencies",
-        offset=offset,
-        limit=limit,
-        data=competencies,
-    )
+    return [c.subject.name for c in competencies]

@@ -47,4 +47,4 @@ class StudentRepository:
         )
 
         res = await self.session.scalars(stmt)
-        return res.all()
+        return res.unique().all()

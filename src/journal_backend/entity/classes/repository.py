@@ -24,7 +24,22 @@ class ClassRepository:
         )
 
         res = await self.session.scalars(stmt)
-        return res.all()
+        return res.unique().all()
+
+    async def get_schedule_by_teacher_id(
+            self,
+            teacher_id: int,
+            d_left: date,
+            d_right: date
+    ) -> Sequence[Class]:
+        stmt = (
+            select(Class).
+            where(Class.teacher_id == teacher_id).
+            where(Class.starts_at.between(d_left, d_right))
+        )
+
+        res = await self.session.scalars(stmt)
+        return res.unique().all()
 
 
 

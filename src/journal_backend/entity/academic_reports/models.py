@@ -22,9 +22,11 @@ class AcademicReport(Base):  # type: ignore[misc]
 
     student: Mapped["Student"] = relationship(
         back_populates='academic_reports',
-        cascade="save-update"
+        cascade="save-update",
+        lazy='joined',
     )
     lesson: Mapped["Class"] = relationship(
         back_populates='academic_reports',
-        cascade="save-update"
+        cascade="save-update",
+        lazy='joined'
     )

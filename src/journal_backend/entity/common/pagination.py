@@ -18,7 +18,7 @@ def generate_pagination_response(
         data: list[T]
 ) -> PaginationResponse[T]:
     return PaginationResponse(
-        next_url=f"{uri_prefix}?offset={offset + 1}&{limit}",
-        prev_url=f"{uri_prefix}?offset={offset - 1}&{limit}",
+        next_url=f"{uri_prefix}?offset={offset + 1}&{limit=}",
+        prev_url=f"{uri_prefix}?offset={offset - 1}&{limit=}",
         data=data,
     )
