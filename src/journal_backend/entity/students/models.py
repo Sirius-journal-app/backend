@@ -1,9 +1,10 @@
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from journal_backend.database.base import Base
+from journal_backend.entity.students.enums import Graduation
 from journal_backend.entity.users.models import UserIdentity
 
 if TYPE_CHECKING:
@@ -37,3 +38,27 @@ class Group(Base):  # type: ignore[misc]
 
     def __str__(self) -> str:
         return self.name
+
+
+class AcademicReport(Base):  # type: ignore[misc]
+    __tablename__ = "academic_reports"
+
+    student_id: Mapped[int] = mapped_column(ForeignKey("students.id", ondelete="NO ACTION"))
+    class_id: Mapped[int] = mapped_column(ForeignKey("classes.id", ondelete="NO ACTION"))
+    is_attended: Mapped[bool] = mapped_column(default=False)
+    grade: Mapped[Graduation] = mapped_column(nullable=True)
+
+    student: Mapped["Student"] = relationship(
+        back_populates='academic_reports',
+        cascade="save-update",
+        lazy='joined',
+    )
+    class_: Mapped["Class"] = relationship(
+        back_populates='academic_reports',
+        cascade="save-update",
+        lazy='joined'
+    )
+
+    __table_args__ = (
+        PrimaryKeyConstraint("student_id", "class_id"),
+    )

@@ -5,12 +5,12 @@ from fastapi_users import jwt
 from passlib.context import CryptContext
 
 from journal_backend.config import AppConfig
-from journal_backend.entity.academic_reports.models import AcademicReport
+from journal_backend.entity.classes.exceptions import ClassNotFound
 from journal_backend.entity.classes.models import Class
 from journal_backend.entity.classes.repository import ClassRepository
 from journal_backend.entity.students import exceptions
-from journal_backend.entity.students.dto import StudentCreate
-from journal_backend.entity.students.models import Student
+from journal_backend.entity.students.dto import StudentCreate, AcademicReportCreate
+from journal_backend.entity.students.models import Student, AcademicReport
 from journal_backend.entity.students.repository import StudentRepository
 from journal_backend.entity.users import exceptions as u_exceptions
 from journal_backend.entity.users.enums import Role
@@ -109,6 +109,24 @@ class StudentService:
         )
         return self._aggregate_classes(classes_on_a_week)
 
+    async def create_academic_reports(
+            self,
+            reports: list[AcademicReportCreate],
+            caller: UserIdentity
+    ) -> None:
+        if caller.role == Role.STUDENT:
+            raise exceptions.StudentPermissionError
+
+        for report in reports:
+            student = await self.repo.get_by_id(report.student_id)
+            if not student:
+                raise exceptions.StudentNotFound
+
+            if not await self.class_repo.student_class_exists(student.group_id, report.class_id):
+                raise ClassNotFound
+
+        await self.repo.create_academic_reports(reports)
+
     async def get_academic_reports_by_id(
             self,
             student_id: int | Literal["me"],
@@ -129,7 +147,7 @@ class StudentService:
         monday = now_with_offset - timedelta(days=now_with_offset.weekday())
         sunday = monday + timedelta(days=7)
 
-        reports: list[AcademicReport] = await self.repo.get_academic_reports_by_id(
+        reports: list[AcademicReport] = await self.repo.get_academic_reports(
             student_id=student_id,
             d_left=monday,
             d_right=sunday,

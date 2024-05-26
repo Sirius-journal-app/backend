@@ -5,7 +5,6 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.academic_reports.dto import build_academic_reports_response
 from journal_backend.entity.classes.dto import build_schedule_response
 from journal_backend.entity.common.pagination import (
     PaginationResponse,
@@ -16,7 +15,7 @@ from journal_backend.entity.students.dto import (
     AuthResponse,
     StudentCreate,
     StudentRead,
-    model_to_read_dto,
+    model_to_read_dto, AcademicReportCreate, build_academic_reports_response,
 )
 from journal_backend.entity.students.service import StudentService
 from journal_backend.entity.users import exceptions as u_exceptions
@@ -121,3 +120,18 @@ async def get_student_academic_reports(
         limit=7,
         data=build_academic_reports_response(reports),
     )
+
+
+@router.post('/academic_reports')
+async def create_academic_reports(
+        reports: list[AcademicReportCreate],
+        caller: UserIdentity = Depends(current_user),
+        service: StudentService = Depends(Stub(StudentService))
+):
+    try:
+        await service.create_academic_reports(reports, caller)
+    except exceptions.StudentPermissionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e)
+        )

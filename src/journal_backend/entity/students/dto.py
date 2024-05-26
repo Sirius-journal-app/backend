@@ -2,9 +2,11 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import EmailStr
 
-from journal_backend.entity.students.models import Student
+from journal_backend.entity.classes.dto import ClassRead, to_read_dto
+from journal_backend.entity.students.enums import Graduation
+from journal_backend.entity.students.models import Student, AcademicReport
 
 
 @dataclass
@@ -26,16 +28,18 @@ class StudentRead:
     is_verified: bool
 
 
-class StudentCreate(BaseModel):
+@dataclass(kw_only=True)
+class StudentCreate:
     name: str
     surname: str
     date_of_birth: Optional[date] = None
     email: EmailStr
     password: str
-    group_name: str = ""
+    group_name: str
 
 
-class StudentUpdate(BaseModel):
+@dataclass
+class StudentUpdate:
     param: str
     value: Any
 
@@ -65,3 +69,33 @@ def model_to_read_dto(student: Student) -> StudentRead:
         group=group,
         is_verified=student.identity.is_verified,
     )
+
+
+@dataclass
+class AcademicReportCreate:
+    student_id: int
+    class_id: int
+    is_attended: bool
+    grade: Optional[Graduation] = None
+
+
+@dataclass
+class AcademicReportRead:
+    id: int
+    student: str
+    class_: ClassRead
+    is_attended: bool
+    grade: Optional[Graduation] = None
+
+
+def build_academic_reports_response(academic_reports: list[AcademicReport]) -> list[AcademicReportRead]:
+    resp = []
+    for report in academic_reports:
+        resp.append(AcademicReportRead(
+            id=report.id,
+            student=report.student.identity.name,
+            is_attended=report.is_attended,
+            grade=report.grade,
+            class_=to_read_dto(class_=report.class_),
+        ))
+    return resp

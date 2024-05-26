@@ -87,14 +87,13 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('academic_reports',
-    sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('student_id', sa.Integer(), nullable=False),
-    sa.Column('lesson_id', sa.Integer(), nullable=True),
+    sa.Column('class_id', sa.Integer(), nullable=True),
     sa.Column('is_attended', sa.Boolean(), nullable=False),
     sa.Column('grade', sa.Enum('TERRIBLY', 'AWFULLY', 'UNSATISFACTORILY', 'SATISFACTORILY', 'GOOD', 'EXCELLENT', name='graduation'), nullable=True),
-    sa.ForeignKeyConstraint(['lesson_id'], ['classes.id'], ondelete='NO ACTION'),
+    sa.ForeignKeyConstraint(['class_id'], ['classes.id'], ondelete='NO ACTION'),
     sa.ForeignKeyConstraint(['student_id'], ['students.id'], ondelete='NO ACTION'),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('student_id', 'class_id')
     )
     # ### end Alembic commands ###
 

@@ -13,7 +13,6 @@ from journal_backend.database.sa_utils import (
     create_session_maker,
 )
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.academic_reports.router import router as ac_router
 from journal_backend.entity.classes.dependencies import get_class_repository
 from journal_backend.entity.classes.repository import ClassRepository
 from journal_backend.entity.students.dependencies import (
@@ -71,7 +70,6 @@ def initialise_routers(app: FastAPI) -> None:
     app.include_router(users_router)
     app.include_router(teachers_router)
     app.include_router(students_router)
-    app.include_router(ac_router)
 
 
 def initialise_dependencies(app: FastAPI, config: Config) -> None:

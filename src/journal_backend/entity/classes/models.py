@@ -5,10 +5,9 @@ from sqlalchemy import DateTime, ForeignKey, ForeignKeyConstraint, Interval
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from journal_backend.database.base import Base
-from journal_backend.entity.academic_reports.models import AcademicReport
 
 if TYPE_CHECKING:
-    from journal_backend.entity.students.models import Group
+    from journal_backend.entity.students.models import Group, AcademicReport
     from journal_backend.entity.teachers.models import Subject, Teacher
 
 DEFAULT_CLASS_DURATION = timedelta(minutes=60 * 1.5)
@@ -30,7 +29,7 @@ class Class(Base):  # type: ignore[misc]
         ForeignKey("classrooms.id", ondelete="SET NULL")
     )
 
-    academic_reports: Mapped[list["AcademicReport"]] = relationship(back_populates="lesson")
+    academic_reports: Mapped[list["AcademicReport"]] = relationship(back_populates="class_")
     group: Mapped["Group"] = relationship(back_populates="classes", lazy='joined')
     teacher: Mapped["Teacher"] = relationship(back_populates="classes", lazy='joined')
     subject: Mapped["Subject"] = relationship(back_populates="classes", lazy='joined')

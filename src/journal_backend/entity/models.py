@@ -1,6 +1,5 @@
-from .academic_reports.models import AcademicReport
 from .classes.models import Class, Classroom
-from .students.models import Group, Student
+from .students.models import AcademicReport, Group, Student
 from .teachers.models import Competence, Subject, Teacher
 from .users.models import UserIdentity
 

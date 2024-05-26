@@ -2,11 +2,13 @@ from datetime import date
 from typing import Any, Sequence
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from journal_backend.entity.academic_reports.models import AcademicReport
 from journal_backend.entity.classes.models import Class
-from journal_backend.entity.students.models import Group, Student
+from journal_backend.entity.students.dto import AcademicReportCreate
+from journal_backend.entity.students.models import Group, Student, AcademicReport
 
 
 class StudentRepository:
@@ -33,7 +35,7 @@ class StudentRepository:
         group = await self.session.scalar(stmt)
         return group
 
-    async def get_academic_reports_by_id(
+    async def get_academic_reports(
             self,
             student_id: int,
             d_left: date,
@@ -48,3 +50,16 @@ class StudentRepository:
 
         res = await self.session.scalars(stmt)
         return res.unique().all()
+
+    async def create_academic_reports(self, reports: list[AcademicReportCreate]):
+        for report in reports:
+            insert_stmt = (
+                insert(AcademicReport).
+                values(**report.__dict__).
+                on_conflict_do_update(
+                    index_elements=[AcademicReport.student_id, AcademicReport.class_id],
+                    set_={'grade': report.grade, 'is_attended': report.is_attended}
+                )
+            )
+            await self.session.execute(insert_stmt)
+        await self.session.commit()
