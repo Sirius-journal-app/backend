@@ -88,11 +88,11 @@ async def get_teacher_weekly_schedule(
             detail=str(e)
         )
 
-    return generate_pagination_response(
-        uri_prefix=f"{router.prefix}/{teacher_id}",
-        offset=offset,
-        limit=7,
-        data=build_schedule_response(schedule),
+    uri_prefix = f"{router.prefix}/{teacher_id}/schedule"
+    return PaginationResponse(
+        next_url=f"{uri_prefix}?offset={offset + 1}",
+        prev_url=f"{uri_prefix}?offset={offset - 1}",
+        data=schedule,
     )
 
 

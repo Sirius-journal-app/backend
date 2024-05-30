@@ -20,7 +20,7 @@ from journal_backend.entity.students.dependencies import (
     get_student_service,
 )
 from journal_backend.entity.students.repository import StudentRepository
-from journal_backend.entity.students.router import router as students_router
+from journal_backend.entity.students.router import router as students_router, groups_router
 from journal_backend.entity.students.service import StudentService
 from journal_backend.entity.teachers.dependencies import (
     get_teacher_repository,
@@ -70,6 +70,7 @@ def initialise_routers(app: FastAPI) -> None:
     app.include_router(users_router)
     app.include_router(teachers_router)
     app.include_router(students_router)
+    app.include_router(groups_router)
 
 
 def initialise_dependencies(app: FastAPI, config: Config) -> None:

@@ -155,6 +155,23 @@ class StudentService:
 
         return reports
 
+    async def get_students_by_group_id(
+            self,
+            group_id: int,
+            caller: UserIdentity,
+            limit: int,
+            offset: int
+    ) -> tuple[list[Student], int]:
+        if caller.role == Role.STUDENT:
+            raise exceptions.StudentPermissionError
+
+        group = await self.repo.get_group_by_id(group_id)
+        if not group:
+            raise exceptions.GroupNotFound
+
+        students, total_in_group = await self.repo.get_students_by_group_id(group_id, limit, offset)
+        return students, total_in_group
+
     @staticmethod
     def _aggregate_classes(classes: list[Class]) -> dict[int, DaySchedule]:
         schedule_by_days: dict[int, Class] = {}

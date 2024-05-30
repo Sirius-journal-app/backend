@@ -23,6 +23,7 @@ from journal_backend.entity.users.dependencies import current_user
 from journal_backend.entity.users.models import UserIdentity
 
 router = APIRouter(prefix="/students", tags=["students"])
+groups_router = APIRouter(prefix="/groups", tags=["students", "groups"])
 
 
 @router.post("")
@@ -92,11 +93,11 @@ async def get_student_weekly_schedule(
             detail=str(e)
         )
 
-    return generate_pagination_response(
-        uri_prefix=f"{router.prefix}/{student_id}",
-        offset=offset,
-        limit=7,
-        data=build_schedule_response(classes_by_days),
+    uri_prefix = f"{router.prefix}/{student_id}/schedule"
+    return PaginationResponse(
+        next_url=f"{uri_prefix}?offset={offset + 1}",
+        prev_url=f"{uri_prefix}?offset={offset - 1}",
+        data=classes_by_days,
     )
 
 
@@ -114,11 +115,12 @@ async def get_student_academic_reports(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=str(e)
         )
-    return generate_pagination_response(
-        uri_prefix=f"{router.prefix}/{student_id}",
-        offset=offset,
-        limit=7,
-        data=build_academic_reports_response(reports),
+
+    uri_prefix = f"{router.prefix}/{student_id}/academic_reports"
+    return PaginationResponse(
+        next_url=f"{uri_prefix}?offset={offset + 1}",
+        prev_url=f"{uri_prefix}?offset={offset - 1}",
+        data=reports,
     )
 
 
@@ -135,3 +137,36 @@ async def create_academic_reports(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e)
         )
+
+
+@groups_router.get('/{group_id}')
+async def get_group_students(
+        group_id: int,
+        limit: int = 25,
+        offset: int = 0,
+        caller: UserIdentity = Depends(current_user),
+        service: StudentService = Depends(Stub(StudentService)),
+):
+    try:
+        students, total_in_group = await service.get_students_by_group_id(group_id, caller, limit, offset)
+    except exceptions.StudentPermissionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e)
+        )
+    except exceptions.GroupNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
+    return generate_pagination_response(
+        uri_prefix=f"{groups_router.prefix}/{group_id}",
+        offset=offset,
+        limit=limit,
+        max_offset=total_in_group,
+        data=[
+            model_to_read_dto(student)
+            for student in students
+        ]
+    )

@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any, Sequence
 
-from sqlalchemy import select
+from sqlalchemy import select, func, label
 from sqlalchemy.dialects.postgresql import insert
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,6 +35,11 @@ class StudentRepository:
         group = await self.session.scalar(stmt)
         return group
 
+    async def get_group_by_id(self, id_: int) -> Group:
+        stmt = select(Group).where(Group.id == id_)
+        group = await self.session.scalar(stmt)
+        return group
+
     async def get_academic_reports(
             self,
             student_id: int,
@@ -63,3 +68,27 @@ class StudentRepository:
             )
             await self.session.execute(insert_stmt)
         await self.session.commit()
+
+    async def get_students_by_group_id(self, group_id: int, limit: int, offset: int) -> tuple[list[Student], int]:
+        group_students_rows = (
+            select(
+                func.row_number().over(order_by=Student.id).label('id_in_group'),
+                Student.id
+            ).
+            where(Student.group_id == group_id).cte()
+        )
+        stmt = (
+            select(Student).
+            add_cte(group_students_rows).
+            join(group_students_rows, onclause=Student.id == group_students_rows.c.id).
+            where(group_students_rows.c.id_in_group > offset).
+            limit(limit)
+        )
+        res = await self.session.scalars(stmt)
+
+        students = res.all()
+        total_in_group = await self.session.scalar(
+            select(func.count(group_students_rows.c.id)).add_cte(group_students_rows)
+        )
+
+        return students, total_in_group
