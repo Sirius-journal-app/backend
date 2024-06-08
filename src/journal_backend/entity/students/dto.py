@@ -6,7 +6,7 @@ from pydantic import EmailStr
 
 from journal_backend.entity.classes.dto import ClassRead, to_read_dto
 from journal_backend.entity.students.enums import Graduation
-from journal_backend.entity.students.models import Student, AcademicReport
+from journal_backend.entity.students.models import AcademicReport, Student
 
 
 @dataclass

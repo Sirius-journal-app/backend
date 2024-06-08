@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from journal_backend.database.base import Base
 
 if TYPE_CHECKING:
-    from journal_backend.entity.students.models import Group, AcademicReport
+    from journal_backend.entity.students.models import AcademicReport, Group
     from journal_backend.entity.teachers.models import Subject, Teacher
 
 DEFAULT_CLASS_DURATION = timedelta(minutes=60 * 1.5)

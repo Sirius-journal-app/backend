@@ -5,17 +5,15 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.classes.dto import build_schedule_response
 from journal_backend.entity.common.pagination import (
     PaginationResponse,
-    generate_pagination_response,
 )
 from journal_backend.entity.teachers import exceptions
 from journal_backend.entity.teachers.dto import (
     AuthResponse,
     TeacherCreate,
     TeacherRead,
-    model_to_read_dto, TeacherCompetence,
+    model_to_read_dto,
 )
 from journal_backend.entity.teachers.models import Competence
 from journal_backend.entity.teachers.service import TeacherService

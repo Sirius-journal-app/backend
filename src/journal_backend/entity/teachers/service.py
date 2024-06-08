@@ -1,5 +1,5 @@
-from datetime import timedelta, date
-from typing import TypeAlias, Literal
+from datetime import date, timedelta
+from typing import Literal, TypeAlias
 
 from fastapi_users import jwt
 from passlib.context import CryptContext

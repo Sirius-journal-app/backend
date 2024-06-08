@@ -5,17 +5,17 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.classes.dto import build_schedule_response
 from journal_backend.entity.common.pagination import (
     PaginationResponse,
     generate_pagination_response,
 )
 from journal_backend.entity.students import exceptions
 from journal_backend.entity.students.dto import (
+    AcademicReportCreate,
     AuthResponse,
     StudentCreate,
     StudentRead,
-    model_to_read_dto, AcademicReportCreate, build_academic_reports_response,
+    model_to_read_dto,
 )
 from journal_backend.entity.students.service import StudentService
 from journal_backend.entity.users import exceptions as u_exceptions

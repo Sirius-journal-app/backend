@@ -1,14 +1,17 @@
 from datetime import date
 from typing import Any, Sequence
 
-from sqlalchemy import select, func, label
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from journal_backend.entity.classes.models import Class
 from journal_backend.entity.students.dto import AcademicReportCreate
-from journal_backend.entity.students.models import Group, Student, AcademicReport
+from journal_backend.entity.students.models import (
+    AcademicReport,
+    Group,
+    Student,
+)
 
 
 class StudentRepository:

@@ -8,7 +8,6 @@ from journal_backend.entity.students.enums import Graduation
 from journal_backend.entity.users.models import UserIdentity
 
 if TYPE_CHECKING:
-    from journal_backend.entity.academic_reports.models import AcademicReport
     from journal_backend.entity.classes.models import Class
 
 

@@ -9,8 +9,11 @@ from journal_backend.entity.classes.exceptions import ClassNotFound
 from journal_backend.entity.classes.models import Class
 from journal_backend.entity.classes.repository import ClassRepository
 from journal_backend.entity.students import exceptions
-from journal_backend.entity.students.dto import StudentCreate, AcademicReportCreate
-from journal_backend.entity.students.models import Student, AcademicReport
+from journal_backend.entity.students.dto import (
+    AcademicReportCreate,
+    StudentCreate,
+)
+from journal_backend.entity.students.models import AcademicReport, Student
 from journal_backend.entity.students.repository import StudentRepository
 from journal_backend.entity.users import exceptions as u_exceptions
 from journal_backend.entity.users.enums import Role
