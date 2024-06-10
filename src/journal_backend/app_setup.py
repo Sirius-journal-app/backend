@@ -5,8 +5,13 @@ import uvicorn
 from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.middleware import Middleware
+from starlette.middleware.sessions import SessionMiddleware
 from starlette_admin.contrib.sqla import Admin, ModelView
 
+from journal_backend.admin.auth_provider import MyAuthProvider
+
+from journal_backend.admin.views import ClassView, ClassRoomView, SubjectView, TeacherView, UserIdentityView
 from journal_backend.config import AppConfig, Config, HttpServerConfig
 from journal_backend.database.dependencies import get_session
 from journal_backend.database.sa_utils import (
@@ -15,7 +20,7 @@ from journal_backend.database.sa_utils import (
 )
 from journal_backend.depends_stub import Stub
 from journal_backend.entity.classes.dependencies import get_class_repository
-from journal_backend.entity.classes.models import Class
+from journal_backend.entity.classes.models import Class, Classroom
 from journal_backend.entity.classes.repository import ClassRepository
 from journal_backend.entity.students.dependencies import (
     get_student_repository,
@@ -83,6 +88,8 @@ def initialise_routers(app: FastAPI) -> None:
     app.include_router(groups_router)
 
 
+
+
 def initialise_dependencies(app: FastAPI, config: Config) -> None:
     """Initialise the dependencies in the app.
 
@@ -93,14 +100,22 @@ def initialise_dependencies(app: FastAPI, config: Config) -> None:
     engine = create_engine(config.db.uri)
     session_factory = create_session_maker(engine)
 
-    admin = Admin(engine, title="Example: SQLAlchemy")
-    admin.add_view(ModelView(UserIdentity))
+    admin = Admin(
+        engine,
+        title="Sirius Journal admin",
+        auth_provider=MyAuthProvider(
+            session_factory,
+        ),
+        middlewares=[Middleware(SessionMiddleware, secret_key=config.app.jwt_secret)],
+    )
+    admin.add_view(UserIdentityView(UserIdentity))
     admin.add_view(ModelView(Student))
     admin.add_view(ModelView(Group))
-    admin.add_view(ModelView(Teacher))
-    admin.add_view(ModelView(Subject))
+    admin.add_view(TeacherView(Teacher))
+    admin.add_view(SubjectView(Subject))
+    admin.add_view(ClassRoomView(Classroom))
     admin.add_view(ModelView(Competence))
-    admin.add_view(ModelView(Class, label='Classes'))
+    admin.add_view(ClassView(Class, label='Classes'))
     admin.add_view(ModelView(AcademicReport))
     admin.mount_to(app)
 

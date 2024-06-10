@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from starlette.requests import Request
 
 from journal_backend.database.base import Base
 from journal_backend.entity.students.enums import Graduation
@@ -37,6 +38,9 @@ class Group(Base):  # type: ignore[misc]
 
     def __str__(self) -> str:
         return self.name
+
+    async def __admin_repr__(self, _: Request):
+        return f"{self.name}"
 
 
 class AcademicReport(Base):  # type: ignore[misc]

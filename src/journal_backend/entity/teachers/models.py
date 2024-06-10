@@ -2,6 +2,7 @@ from typing import Optional
 
 from sqlalchemy import ForeignKey, PrimaryKeyConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from starlette.requests import Request
 
 from journal_backend.database.base import Base
 from journal_backend.entity.classes.models import Class
@@ -25,6 +26,12 @@ class Teacher(Base):  # type: ignore[misc]
     )
     classes: Mapped[list["Class"]] = relationship(back_populates="teacher")
 
+    def __str__(self):
+        return f"{str(self.identity)}; competencies: {[c.subject.name for c in self.competencies]}"
+
+    async def __admin_repr__(self, _: Request):
+        return f"{self.identity.surname} {self.identity.name}"
+
 
 class Subject(Base):  # type: ignore[misc]
     __tablename__ = "subjects"
@@ -35,6 +42,9 @@ class Subject(Base):  # type: ignore[misc]
     classes: Mapped[list["Class"]] = relationship(back_populates="subject")
     # People who are competent for the subject
     competents: Mapped[list["Competence"]] = relationship(back_populates="subject")
+
+    async def __admin_repr__(self, _: Request):
+        return f"{self.name}"
 
 
 class Competence(Base):  # type: ignore[misc]

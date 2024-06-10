@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import DateTime, ForeignKey, ForeignKeyConstraint, Interval
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from starlette.requests import Request
 
 from journal_backend.database.base import Base
 
@@ -50,3 +51,6 @@ class Classroom(Base):  # type: ignore[misc]
     name: Mapped[str] = mapped_column()
 
     classes: Mapped[list["Class"]] = relationship(back_populates="classroom")
+
+    async def __admin_repr__(self, _: Request):
+        return f"{self.name}"

@@ -54,11 +54,11 @@ fastapi_users_inst = FastAPIUsers(
     auth_backends=[auth_backend]
 )
 
-ouath2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="users/login")
 
 
 async def current_user(
-        token: str = Depends(ouath2_scheme),
+        token: str = Depends(oauth2_scheme),
         cfg: Config = Depends(Stub(Config)),
         user_repo: UserRepository = Depends(Stub(UserRepository))
 ) -> UserIdentity:
