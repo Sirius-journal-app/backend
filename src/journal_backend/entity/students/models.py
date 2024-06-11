@@ -30,7 +30,7 @@ class Group(Base):  # type: ignore[misc]
     __tablename__ = "groups"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column(unique=True)
     admission_year: Mapped[int] = mapped_column()
 
     students: Mapped[list["Student"]] = relationship(back_populates="group")

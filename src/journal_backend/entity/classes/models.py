@@ -48,7 +48,7 @@ class Classroom(Base):  # type: ignore[misc]
     __tablename__ = "classrooms"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column(unique=True)
 
     classes: Mapped[list["Class"]] = relationship(back_populates="classroom")
 
