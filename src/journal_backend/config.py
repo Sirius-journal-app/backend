@@ -74,6 +74,23 @@ class Database:
 
 
 @dataclass
+class SMTPConfig:
+    host: str
+    email: str
+    password: str
+    port: int = 465
+
+@dataclass
+class RedisConfig:
+    host: str = "localhost"
+    port: int = 6379
+
+    @property
+    def uri(self) -> str:
+        return f"redis://{self.host}:{self.port}/0"
+
+
+@dataclass
 class Config:
     """Represent the overall configuration of the project.
 
@@ -81,11 +98,14 @@ class Config:
         app (AppConfig): The application configuration.
         http_server (HttpServerConfig): The HTTP server configuration.
         db (Database): The database configuration.
+        smtp (SMTPConfig): The SMTP server configuration.
     """
 
     app: AppConfig
     http_server: HttpServerConfig
     db: Database
+    smtp: SMTPConfig
+    redis: RedisConfig
 
 
 def load_config(config_path: str) -> Config:
@@ -100,4 +120,6 @@ def load_config(config_path: str) -> Config:
         app=AppConfig(**data["app"]),
         http_server=HttpServerConfig(**data["http_server"]),
         db=Database(**data["db"]),
+        smtp=SMTPConfig(**data["smtp"]),
+        redis=RedisConfig(**data["redis"]),
     )

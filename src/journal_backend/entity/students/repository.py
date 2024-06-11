@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any, Sequence
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,7 +24,7 @@ class StudentRepository:
     async def create(self, **creds: Any) -> Student:
         student = Student(**creds)
         self.session.add(student)
-        await self.session.commit()
+        await self.session.flush()
         await self.session.refresh(student)
         return student
 

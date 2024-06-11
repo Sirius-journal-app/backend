@@ -1,13 +1,17 @@
+import uuid
 from datetime import date, timedelta
+from email.message import EmailMessage
 from typing import Literal, TypeAlias
 
 from fastapi_users import jwt
 from passlib.context import CryptContext
+from redis.asyncio import Redis
 
-from journal_backend.config import AppConfig
+from journal_backend.config import AppConfig, SMTPConfig
 from journal_backend.entity.classes.exceptions import ClassNotFound
 from journal_backend.entity.classes.models import Class
 from journal_backend.entity.classes.repository import ClassRepository
+from journal_backend.entity.common.email_sender import EmailSender
 from journal_backend.entity.students import exceptions
 from journal_backend.entity.students.dto import (
     AcademicReportCreate,
@@ -29,26 +33,29 @@ class StudentService:
             repo: StudentRepository,
             user_repo: UserRepository,
             class_repo: ClassRepository,
+            email_sender: EmailSender,
+            redis_conn: Redis,
     ) -> None:
         self.repo = repo
         self.user_repo = user_repo
         self.class_repo = class_repo
+        self.email_sender = email_sender
+        self.redis_conn = redis_conn
         self.context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     async def create(
             self,
             student_create: StudentCreate,
-            app_cfg: AppConfig
+            app_cfg: AppConfig,
+            smtp_cfg: SMTPConfig,
     ) -> tuple[str, Student]:
         existing = await self.user_repo.get_by_email(email=student_create.email)
         if existing:
             raise u_exceptions.UserAlreadyExists
 
-        group = None
-        if student_create.group_name:
-            group = await self.repo.get_group_by_name(student_create.group_name)
-            if not group:
-                raise exceptions.GroupNotFound
+        group = await self.repo.get_group_by_name(student_create.group_name)
+        if not group:
+            raise exceptions.GroupNotFound
 
         identity = await self.user_repo.create(
             {
@@ -73,7 +80,42 @@ class StudentService:
             lifetime_seconds=app_cfg.jwt_lifetime_seconds
         )
 
+        one_time_token = uuid.uuid4()
+        await self.redis_conn.setex(
+            name=str(one_time_token),
+            value=new_student.id,
+            time=timedelta(minutes=10)
+        )
+
+        body = f"""
+        Привет, перейди по ссылке ниже для подтверждения почты в течении 10 минут
+        http://localhost:8000/students/confirm-email/?token={one_time_token}
+        """
+        em = EmailMessage()
+        em['From'] = smtp_cfg.email
+        em['To'] = student_create.email
+        em['Subject'] = 'Mail confirmation'
+        em.set_content(body)
+        await self.email_sender.send_email(
+            email_to=student_create.email,
+            em=em,
+            smtp_cfg=smtp_cfg
+        )
+
+        await self.repo.session.commit()
+
         return auth_token, new_student
+
+    async def confirm_email(self, token: str, caller: UserIdentity) -> None:
+        student_id = await self.redis_conn.get(token)
+        if not student_id:
+            raise exceptions.InvalidConfirmationToken
+
+        if int(student_id) != caller.id:
+            raise exceptions.InvalidIdentity
+
+        await self.user_repo.set_verified(int(student_id))
+        await self.redis_conn.delete(token)
 
     async def get_by_id(self, student_id: int, caller: UserIdentity) -> Student:
         if caller.role == Role.STUDENT and caller.id != student_id:

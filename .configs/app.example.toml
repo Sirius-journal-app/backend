@@ -17,3 +17,12 @@ password = "postgres"
 name = "postgres"
 host = "localhost"
 port = 5432
+
+[smtp]
+host = "smtp.server.com"
+email = "email@mail.com"
+password = "some passcode"
+
+[redis]
+host = "localhost"
+port = 6379

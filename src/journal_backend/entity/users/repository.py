@@ -4,7 +4,7 @@ from fastapi_users_db_sqlalchemy import (
     SQLAlchemyBaseOAuthAccountTable,
     SQLAlchemyUserDatabase,
 )
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from journal_backend.entity.users.models import UserIdentity
@@ -27,6 +27,11 @@ class UserRepository(SQLAlchemyUserDatabase[UserIdentity, int]):
         await self.session.flush([user])
         await self.session.refresh(user)
         return user
+
+    async def set_verified(self, student_id: int):
+        stmt = update(UserIdentity).where(UserIdentity.id == student_id).values(is_verified=True)
+        await self.session.execute(stmt)
+        await self.session.commit()
 
     async def last(self) -> Optional[UserIdentity]:
         stmt = select(UserIdentity.id).order_by(UserIdentity.id.desc())

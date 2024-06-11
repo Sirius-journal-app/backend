@@ -30,8 +30,21 @@ services:
   pgsql:
     image: postgres:16.0-alpine3.18
     container_name: pgsql
+    ports:
+      - "5432:5432"
     env_file:
       - .configs/db.env
     volumes:
-      - /journal-backend/postgresql/data:/var/lib/postgresql/data
+      - "/journal-backend/postgresql/data:/var/lib/postgresql/data"
     restart: always
+
+  redis:
+    image: redis:7.2.4-alpine
+    container_name: "redis"
+    restart: "unless-stopped"
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./.configs:/usr/local/etc/redis" # TODO: replace with /etc/redis/...
+      - "/journal_backend/redis/data:/data"
+    command: "redis-server /usr/local/etc/redis/redis.conf"

@@ -1,7 +1,7 @@
 from fastapi_users.password import PasswordHelper
 from sqlalchemy.orm import sessionmaker
 from starlette.requests import Request
-from starlette.responses import Response, RedirectResponse
+from starlette.responses import Response
 from starlette_admin.auth import AuthProvider
 from starlette_admin.exceptions import LoginFailed, FormValidationError
 
@@ -12,7 +12,6 @@ from journal_backend.entity.users.repository import UserRepository
 
 class MyAuthProvider(AuthProvider):
     def __init__(self, session_factory: sessionmaker, **kwargs):
-        print("Initialising auth provider")
         super().__init__(**kwargs)
         self.session_factory = session_factory
         self._password_helper = PasswordHelper()
@@ -59,7 +58,6 @@ class MyAuthProvider(AuthProvider):
         return response
 
     async def is_authenticated(self, request: Request) -> bool:
-        print(request.session)
         if request.session.get("username", None) is not None:
             request.state.user = request.session.get("username")
             return True

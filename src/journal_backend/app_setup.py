@@ -4,6 +4,7 @@ from functools import partial
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
+from redis.asyncio import ConnectionPool, Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -22,6 +23,8 @@ from journal_backend.depends_stub import Stub
 from journal_backend.entity.classes.dependencies import get_class_repository
 from journal_backend.entity.classes.models import Class, Classroom
 from journal_backend.entity.classes.repository import ClassRepository
+from journal_backend.entity.common.dependencies import get_email_sender, get_redis_conn
+from journal_backend.entity.common.email_sender import EmailSender
 from journal_backend.entity.students.dependencies import (
     get_student_repository,
     get_student_service,
@@ -88,14 +91,13 @@ def initialise_routers(app: FastAPI) -> None:
     app.include_router(groups_router)
 
 
-
-
-def initialise_dependencies(app: FastAPI, config: Config) -> None:
+def initialise_dependencies(app: FastAPI, config: Config, redis_pool: ConnectionPool) -> None:
     """Initialise the dependencies in the app.
 
     Args:
         app (FastAPI): The FastAPI instance.
         config (Config): The config instance.
+        redis_pool (ConnectionPool): The redis connection pool.
     """
     engine = create_engine(config.db.uri)
     session_factory = create_session_maker(engine)
@@ -123,6 +125,8 @@ def initialise_dependencies(app: FastAPI, config: Config) -> None:
     app.dependency_overrides[Stub(Config)] = lambda: config
     app.dependency_overrides[Stub(AppConfig)] = lambda: config.app
 
+    app.dependency_overrides[Stub(EmailSender)] = get_email_sender  # TODO: replace with task in queue
+    app.dependency_overrides[Stub(Redis)] = partial(get_redis_conn, redis_pool)
     app.dependency_overrides[Stub(UserRepository)] = get_user_repository
     app.dependency_overrides[Stub(UserService)] = get_user_service
     app.dependency_overrides[Stub(StudentRepository)] = get_student_repository

@@ -35,7 +35,8 @@ async def register(
     try:
         auth_token, student = await student_service.create(
             student_create=student_body,
-            app_cfg=cfg.app
+            app_cfg=cfg.app,
+            smtp_cfg=cfg.smtp,
         )
     except u_exceptions.UserAlreadyExists as e:
         raise HTTPException(
@@ -47,10 +48,36 @@ async def register(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
     return AuthResponse(
         token=auth_token,
         student=model_to_read_dto(student)
     )
+
+
+@router.get('/confirm-email')
+async def confirm_email(
+        token: str,
+        caller: UserIdentity = Depends(current_user),
+        student_service: StudentService = Depends(Stub(StudentService)),
+):
+    try:
+        await student_service.confirm_email(token, caller)
+    except exceptions.InvalidConfirmationToken as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e),
+        )
+    except exceptions.InvalidIdentity as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=str(e),
+        )
+    return "OK"
 
 
 @router.get("/{student_id}")
