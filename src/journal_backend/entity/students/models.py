@@ -39,7 +39,7 @@ class Group(Base):  # type: ignore[misc]
     def __str__(self) -> str:
         return self.name
 
-    async def __admin_repr__(self, _: Request):
+    async def __admin_repr__(self, _: Request) -> str:
         return f"{self.name}"
 
 

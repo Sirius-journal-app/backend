@@ -52,5 +52,5 @@ class Classroom(Base):  # type: ignore[misc]
 
     classes: Mapped[list["Class"]] = relationship(back_populates="classroom")
 
-    async def __admin_repr__(self, _: Request):
+    async def __admin_repr__(self, _: Request) -> str:
         return f"{self.name}"

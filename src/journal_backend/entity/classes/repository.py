@@ -41,7 +41,7 @@ class ClassRepository:
         res = await self.session.scalars(stmt)
         return res.unique().all()
 
-    async def student_class_exists(self, student_group_id: int, class_id: int):
+    async def student_class_exists(self, student_group_id: int, class_id: int) -> bool:
         stmt = (
             select(Class).
             where(Class.group_id == student_group_id).

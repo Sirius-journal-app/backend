@@ -83,7 +83,11 @@ class TeacherService:
 
         return teacher
 
-    async def get_competencies(self, teacher_id: int | Literal['me'], caller: UserIdentity) -> list[Competence]:
+    async def get_competencies(
+            self,
+            teacher_id: int | Literal['me'],
+            caller: UserIdentity
+    ) -> list[Competence]:
         if teacher_id == "me":
             teacher_id = caller.id
 
@@ -101,7 +105,7 @@ class TeacherService:
             teacher_id: int | Literal["me"],
             offset: int,
             caller: UserIdentity
-    ) -> list[DaySchedule]:
+    ) -> dict[int, DaySchedule]:
         if teacher_id == "me":
             teacher_id = caller.id
 
@@ -124,7 +128,7 @@ class TeacherService:
         return self._aggregate_classes(classes_on_a_week)
 
     @staticmethod
-    def _aggregate_classes(classes: list[Class]) -> list[DaySchedule]:
+    def _aggregate_classes(classes: list[Class]) -> dict[int, DaySchedule]:
         schedule_by_days: dict[int, Class] = {}
         for class_ in classes:
             weekday = class_.starts_at.weekday()

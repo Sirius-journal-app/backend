@@ -87,7 +87,9 @@ class AcademicReportRead:
     grade: Optional[Graduation] = None
 
 
-def build_academic_reports_response(academic_reports: list[AcademicReport]) -> list[AcademicReportRead]:
+def build_academic_reports_response(
+        academic_reports: list[AcademicReport]
+) -> list[AcademicReportRead]:
     resp = []
     for report in academic_reports:
         resp.append(AcademicReportRead(

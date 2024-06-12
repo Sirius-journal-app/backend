@@ -1,3 +1,5 @@
+from typing import TypeAlias, TYPE_CHECKING
+
 from fastapi import Depends
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,6 +10,11 @@ from journal_backend.entity.common.email_sender import EmailSender
 from journal_backend.entity.students.repository import StudentRepository
 from journal_backend.entity.students.service import StudentService
 from journal_backend.entity.users.repository import UserRepository
+
+if TYPE_CHECKING:
+    RedisT: TypeAlias = Redis[str]
+else:
+    RedisT = Redis
 
 
 async def get_student_repository(
@@ -21,6 +28,12 @@ async def get_student_service(
         user_repository: UserRepository = Depends(Stub(UserRepository)),
         class_repository: ClassRepository = Depends(Stub(ClassRepository)),
         email_sender: EmailSender = Depends(Stub(EmailSender)),
-        redis_conn: Redis = Depends(Stub(Redis)),
+        redis_conn: RedisT = Depends(Stub(Redis)),
 ) -> StudentService:
-    yield StudentService(student_repository, user_repository, class_repository, email_sender, redis_conn)
+    yield StudentService(
+        student_repository,
+        user_repository,
+        class_repository,
+        email_sender,
+        redis_conn
+    )

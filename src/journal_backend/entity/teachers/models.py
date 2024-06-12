@@ -26,10 +26,10 @@ class Teacher(Base):  # type: ignore[misc]
     )
     classes: Mapped[list["Class"]] = relationship(back_populates="teacher")
 
-    def __str__(self):
-        return f"{str(self.identity)}; competencies: {[c.subject.name for c in self.competencies]}"
+    def __str__(self) -> str:
+        return f"{self.identity}; competencies: {[c.subject.name for c in self.competencies]}"
 
-    async def __admin_repr__(self, _: Request):
+    async def __admin_repr__(self, _: Request) -> str:
         return f"{self.identity.surname} {self.identity.name}"
 
 
@@ -43,7 +43,7 @@ class Subject(Base):  # type: ignore[misc]
     # People who are competent for the subject
     competents: Mapped[list["Competence"]] = relationship(back_populates="subject")
 
-    async def __admin_repr__(self, _: Request):
+    async def __admin_repr__(self, _: Request) -> str:
         return f"{self.name}"
 
 

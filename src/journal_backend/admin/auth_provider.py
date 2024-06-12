@@ -1,9 +1,11 @@
+from typing import Any
+
 from fastapi_users.password import PasswordHelper
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette_admin.auth import AuthProvider
-from starlette_admin.exceptions import LoginFailed, FormValidationError
+from starlette_admin.exceptions import FormValidationError, LoginFailed
 
 from journal_backend.entity.users.enums import Role
 from journal_backend.entity.users.models import UserIdentity
@@ -11,7 +13,7 @@ from journal_backend.entity.users.repository import UserRepository
 
 
 class MyAuthProvider(AuthProvider):
-    def __init__(self, session_factory: sessionmaker, **kwargs):
+    def __init__(self, session_factory: async_sessionmaker[AsyncSession], **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.session_factory = session_factory
         self._password_helper = PasswordHelper()

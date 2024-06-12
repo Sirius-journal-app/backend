@@ -5,7 +5,10 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.classes.dto import DailySchedule, build_schedule_response
+from journal_backend.entity.classes.dto import (
+    DailySchedule,
+    build_schedule_response,
+)
 from journal_backend.entity.classes.exceptions import ClassNotFound
 from journal_backend.entity.common.pagination import (
     PaginationResponse,
@@ -14,10 +17,13 @@ from journal_backend.entity.common.pagination import (
 from journal_backend.entity.students import exceptions
 from journal_backend.entity.students.dto import (
     AcademicReportCreate,
+    AcademicReportRead,
     AuthResponse,
+    Group,
     StudentCreate,
     StudentRead,
-    model_to_read_dto, Group, AcademicReportRead, build_academic_reports_response,
+    build_academic_reports_response,
+    model_to_read_dto,
 )
 from journal_backend.entity.students.service import StudentService
 from journal_backend.entity.users import exceptions as u_exceptions
@@ -66,7 +72,7 @@ async def confirm_email(
         token: str,
         caller: UserIdentity = Depends(current_user),
         student_service: StudentService = Depends(Stub(StudentService)),
-) -> None:
+) -> str:
     try:
         await student_service.confirm_email(token, caller)
     except exceptions.InvalidConfirmationToken as e:

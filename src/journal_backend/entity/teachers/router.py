@@ -5,9 +5,7 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
-from journal_backend.entity.common.pagination import (
-    PaginationResponse,
-)
+from journal_backend.entity.common.pagination import PaginationResponse
 from journal_backend.entity.teachers import exceptions
 from journal_backend.entity.teachers.dto import (
     AuthResponse,

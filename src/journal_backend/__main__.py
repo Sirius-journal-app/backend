@@ -4,6 +4,7 @@ import asyncio
 import sys
 
 from redis.asyncio import ConnectionPool
+from redis.asyncio.connection import Connection
 
 from journal_backend.app_setup import (
     create_app,
@@ -22,14 +23,14 @@ async def main() -> None:
 
     initialise_routers(app)
 
-    redis_pool = ConnectionPool.from_url(config.redis.uri)
+    redis_pool: ConnectionPool[Connection] = ConnectionPool.from_url(config.redis.uri)
     initialise_dependencies(app, config, redis_pool)
 
     server = create_http_server(app, config.http_server)
     try:
         await server.serve()
     finally:
-        await redis_pool.aclose()
+        await redis_pool.aclose()  # type:ignore[attr-defined]
 
 
 if __name__ == "__main__":

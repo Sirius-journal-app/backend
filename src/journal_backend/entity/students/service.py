@@ -2,7 +2,7 @@ import asyncio
 import uuid
 from datetime import date, timedelta
 from email.message import EmailMessage
-from typing import Literal, TypeAlias
+from typing import Literal, TypeAlias, TYPE_CHECKING
 
 from fastapi_users import jwt
 from passlib.context import CryptContext
@@ -18,7 +18,7 @@ from journal_backend.entity.students.dto import (
     AcademicReportCreate,
     StudentCreate,
 )
-from journal_backend.entity.students.models import AcademicReport, Student
+from journal_backend.entity.students.models import AcademicReport, Student, Group
 from journal_backend.entity.students.repository import StudentRepository
 from journal_backend.entity.users import exceptions as u_exceptions
 from journal_backend.entity.users.enums import Role
@@ -26,6 +26,15 @@ from journal_backend.entity.users.models import UserIdentity
 from journal_backend.entity.users.repository import UserRepository
 
 DaySchedule: TypeAlias = list[Class]
+
+if TYPE_CHECKING:
+    RedisT: TypeAlias = Redis[str]
+else:
+    RedisT = Redis
+
+
+class AsyncConnectionPool:
+    pass
 
 
 class StudentService:
@@ -35,7 +44,7 @@ class StudentService:
             user_repo: UserRepository,
             class_repo: ClassRepository,
             email_sender: EmailSender,
-            redis_conn: Redis,
+            redis_conn: RedisT,
     ) -> None:
         self.repo = repo
         self.user_repo = user_repo
@@ -128,7 +137,7 @@ class StudentService:
 
         return student
 
-    async def get_group_info_by_id(self, group_id: int):
+    async def get_group_info_by_id(self, group_id: int) -> Group:
         group = await self.repo.get_group_by_id(group_id)
         return group
 
@@ -219,7 +228,11 @@ class StudentService:
         if not group:
             raise exceptions.GroupNotFound
 
-        students, total_in_group = await self.repo.get_students_by_group_id(group_id, limit, offset)
+        students, total_in_group = await self.repo.get_students_by_group_id(
+            group_id,
+            limit,
+            offset
+        )
         return students, total_in_group
 
     @staticmethod

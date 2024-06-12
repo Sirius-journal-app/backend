@@ -9,29 +9,32 @@ from starlette_admin.contrib.sqla import ModelView
 from starlette_admin.exceptions import FormValidationError
 
 from journal_backend.entity.teachers.models import Teacher
-from journal_backend.entity.users.models import UserIdentity
 
 
 class ClassView(ModelView):
     fields = [
-        "id",
-        "starts_at",
+        "id",  # type:ignore
+        "starts_at",  # type:ignore
         TimeField("duration"),
-        "group",
-        "teacher",
-        "classroom",
-        "subject",
+        "group",  # type:ignore
+        "teacher",  # type:ignore
+        "classroom",  # type:ignore
+        "subject",  # type:ignore
     ]
 
     async def validate(self, request: Request, data: dict[str, Any]) -> None:
-        errors = {}
+        errors: dict[str | int, Any] = {}
         session: AsyncSession = request.state.session
 
         subject_name = data['subject'].name
         teacher = await session.get(Teacher, data['teacher'].id)
+        if not teacher:
+            return
+
         if subject_name not in [c.subject.name for c in teacher.competencies]:
-            errors[
-                'subject'] = f'Teacher {teacher.identity.surname.title()} {teacher.identity.name.title()} has no competence for this subject'
+            teacher = teacher.identity
+            errors['subject'] = (f'Teacher {teacher.surname.title()} {teacher.name.title()} '
+                                 f'has no competence for this subject')
             raise FormValidationError(errors)
 
         duration: time = data['duration']
@@ -65,31 +68,31 @@ class ClassView(ModelView):
 
 
 class ClassRoomView(ModelView):
-    fields = ["id", "name"]
+    fields = ["id", "name"]  # type:ignore
 
 
 class SubjectView(ModelView):
-    fields = ["id", "name"]
+    fields = ["id", "name"]  # type:ignore
 
 
 class TeacherView(ModelView):
     fields = [
-        "id",
-        "identity",
-        "qualification",
-        "education",
-        "competencies",
+        "id",  # type:ignore
+        "identity",  # type:ignore
+        "qualification",  # type:ignore
+        "education",  # type:ignore
+        "competencies",  # type:ignore
     ]
 
 
 class UserIdentityView(ModelView):
     fields = [
-        "id",
-        "name",
-        "surname",
-        "role",
-        "date_of_birth",
-        "profile_photo_uri",
+        "id",  # type:ignore
+        "name",  # type:ignore
+        "surname",  # type:ignore
+        "role",  # type:ignore
+        "date_of_birth",  # type:ignore
+        "profile_photo_uri",  # type:ignore
         EmailField("email"),
         PasswordField("hashed_password", label='Password'),
     ]

@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Any, Sequence
 
-from sqlalchemy import func, select, update
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -59,7 +59,7 @@ class StudentRepository:
         res = await self.session.scalars(stmt)
         return res.unique().all()
 
-    async def create_academic_reports(self, reports: list[AcademicReportCreate]):
+    async def create_academic_reports(self, reports: list[AcademicReportCreate]) -> None:
         for report in reports:
             insert_stmt = (
                 insert(AcademicReport).
@@ -72,10 +72,15 @@ class StudentRepository:
             await self.session.execute(insert_stmt)
         await self.session.commit()
 
-    async def get_students_by_group_id(self, group_id: int, limit: int, offset: int) -> tuple[list[Student], int]:
+    async def get_students_by_group_id(
+            self,
+            group_id: int,
+            limit: int,
+            offset: int
+    ) -> tuple[list[Student], int]:
         group_students_rows = (
             select(
-                func.row_number().over(order_by=Student.id).label('id_in_group'),
+                func.row_number().over(order_by=Student.id).label('id_in_group'),  # type:ignore
                 Student.id
             ).
             where(Student.group_id == group_id).cte()
@@ -89,9 +94,11 @@ class StudentRepository:
         )
         res = await self.session.scalars(stmt)
 
-        students = res.all()
+        students = list(res.all())
         total_in_group = await self.session.scalar(
             select(func.count(group_students_rows.c.id)).add_cte(group_students_rows)
         )
+        if not total_in_group:
+            total_in_group = 0
 
         return students, total_in_group

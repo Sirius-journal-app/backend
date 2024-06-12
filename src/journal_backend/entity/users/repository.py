@@ -28,7 +28,7 @@ class UserRepository(SQLAlchemyUserDatabase[UserIdentity, int]):
         await self.session.refresh(user)
         return user
 
-    async def set_verified(self, student_id: int):
+    async def set_verified(self, student_id: int) -> None:
         stmt = update(UserIdentity).where(UserIdentity.id == student_id).values(is_verified=True)
         await self.session.execute(stmt)
         await self.session.commit()
