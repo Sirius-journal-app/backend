@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from datetime import date, timedelta
 from email.message import EmailMessage
@@ -96,11 +97,11 @@ class StudentService:
         em['To'] = student_create.email
         em['Subject'] = 'Mail confirmation'
         em.set_content(body)
-        await self.email_sender.send_email(
+        asyncio.create_task(self.email_sender.send_email(
             email_to=student_create.email,
             em=em,
             smtp_cfg=smtp_cfg
-        )
+        ))
 
         await self.repo.session.commit()
 
