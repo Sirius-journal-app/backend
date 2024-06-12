@@ -75,12 +75,11 @@ indent-width = 4
 # Assume Python 3.11
 target-version = "py311"
 
-pydocstyle.convention = "pep257"
-
 
 [tool.ruff.lint]
-select = ["E", "F", "C", "D", "W"]
+select = ["E", "F", "C", "W"]
 ignore = []
+pydocstyle.convention = "pep257"
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
@@ -109,6 +108,9 @@ skip_glob = ["docs/*", "*/migrations/versions"]
 
 [tool.mypy]
 strict = true
+exclude = [
+    "^src/journal_backend/migrations/"
+]
 python_version = "3.11"
 ignore_missing_imports = true
 install_types = true
