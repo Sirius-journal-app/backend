@@ -32,6 +32,9 @@ class Teacher(Base):  # type: ignore[misc]
     async def __admin_repr__(self, _: Request) -> str:
         return f"{self.identity.surname} {self.identity.name}"
 
+    async def __admin_select2_repr__(self, _: Request) -> str:
+        return f"<div>{self.identity.surname} {self.identity.name}</div>"
+
 
 class Subject(Base):  # type: ignore[misc]
     __tablename__ = "subjects"
@@ -46,6 +49,9 @@ class Subject(Base):  # type: ignore[misc]
     async def __admin_repr__(self, _: Request) -> str:
         return f"{self.name}"
 
+    async def __admin_select2_repr__(self, _: Request) -> str:
+        return f"<div>{self.name}</div>"
+
 
 class Competence(Base):  # type: ignore[misc]
     __tablename__ = "competencies"
@@ -53,9 +59,15 @@ class Competence(Base):  # type: ignore[misc]
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id", ondelete="CASCADE"))
     subject_id: Mapped[int] = mapped_column(ForeignKey("subjects.id", ondelete="CASCADE"))
 
-    teacher: Mapped["Teacher"] = relationship(back_populates="competencies")
+    teacher: Mapped["Teacher"] = relationship(back_populates="competencies", lazy='joined')
     subject: Mapped["Subject"] = relationship(back_populates="competents", lazy='joined')
 
     __table_args__ = (
         PrimaryKeyConstraint("teacher_id", "subject_id"),
     )
+
+    async def __admin_repr__(self, _: Request) -> str:
+        return f"{self.subject.name}"
+
+    async def __admin_select2_repr__(self, _: Request) -> str:
+        return f"<div>{self.subject.name}</div>"

@@ -3,6 +3,7 @@ from typing import Optional
 
 from sqlalchemy import Boolean, DateTime, String
 from sqlalchemy.orm import Mapped, mapped_column
+from starlette.requests import Request
 
 from journal_backend.database.base import Base
 from journal_backend.entity.users.enums import Role
@@ -31,3 +32,6 @@ class UserIdentity(Base):  # type:ignore[misc]
 
     # can be defined by the role (this is a stub for fastapi-users)
     is_superuser: bool = False
+
+    async def __admin_repr__(self, _: Request) -> str:
+        return f"{self.surname} {self.name}"

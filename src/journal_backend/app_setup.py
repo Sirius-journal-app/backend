@@ -13,7 +13,7 @@ from starlette_admin.contrib.sqla import Admin, ModelView
 
 from journal_backend.admin.auth_provider import MyAuthProvider
 from journal_backend.admin.views import (
-    ClassRoomView,
+    ClassroomView,
     ClassView,
     SubjectView,
     TeacherView,
@@ -133,7 +133,7 @@ def initialise_dependencies(
     admin.add_view(ModelView(Group))
     admin.add_view(TeacherView(Teacher))
     admin.add_view(SubjectView(Subject))
-    admin.add_view(ClassRoomView(Classroom))
+    admin.add_view(ClassroomView(Classroom))
     admin.add_view(ModelView(Competence))
     admin.add_view(ClassView(Class, label='Classes'))
     admin.add_view(ModelView(AcademicReport))

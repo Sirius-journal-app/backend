@@ -2,13 +2,15 @@ from datetime import timedelta, time
 from typing import Any
 
 from passlib.context import CryptContext
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 from starlette_admin import TimeField, RequestAction, BaseField, EmailField, PasswordField
 from starlette_admin.contrib.sqla import ModelView
 from starlette_admin.exceptions import FormValidationError
 
-from journal_backend.entity.teachers.models import Teacher
+from journal_backend.entity.classes.models import Classroom
+from journal_backend.entity.teachers.models import Teacher, Subject
 
 
 class ClassView(ModelView):
@@ -67,12 +69,32 @@ class ClassView(ModelView):
         return await field.serialize_value(request, value, action)
 
 
-class ClassRoomView(ModelView):
+class ClassroomView(ModelView):
     fields = ["id", "name"]  # type:ignore
+
+    async def validate(self, request: Request, data: dict[str, Any]):
+        new_name = data['name']
+        stmt = select(Classroom).where(Classroom.name == new_name)
+
+        session: AsyncSession = request.state.session
+        res = await session.scalars(stmt)
+
+        if len(res.all()) > 0:
+            raise FormValidationError({'name': 'Classroom with such name already exists'})
 
 
 class SubjectView(ModelView):
     fields = ["id", "name"]  # type:ignore
+
+    async def validate(self, request: Request, data: dict[str, Any]):
+        new_name = data['name']
+        stmt = select(Subject).where(Subject.name == new_name)
+
+        session: AsyncSession = request.state.session
+        res = await session.scalars(stmt)
+
+        if len(res.all()) > 0:
+            raise FormValidationError({'name': 'Subject with such name already exists'})
 
 
 class TeacherView(ModelView):
@@ -83,6 +105,8 @@ class TeacherView(ModelView):
         "education",  # type:ignore
         "competencies",  # type:ignore
     ]
+
+    exclude_fields_from_edit = ["competencies"]
 
 
 class UserIdentityView(ModelView):
