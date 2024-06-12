@@ -67,27 +67,6 @@ async def register(
     )
 
 
-@router.get('/confirm-email')
-async def confirm_email(
-        token: str,
-        caller: UserIdentity = Depends(current_user),
-        student_service: StudentService = Depends(Stub(StudentService)),
-) -> str:
-    try:
-        await student_service.confirm_email(token, caller)
-    except exceptions.InvalidConfirmationToken as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e),
-        )
-    except exceptions.InvalidIdentity as e:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail=str(e),
-        )
-    return "OK"
-
-
 @router.get("/{student_id}")
 async def retrieve_student(
         student_id: int | Literal["me"],

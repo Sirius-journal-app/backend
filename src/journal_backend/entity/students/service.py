@@ -99,7 +99,7 @@ class StudentService:
 
         body = f"""
         Привет, перейди по ссылке ниже для подтверждения почты в течении 10 минут
-        http://localhost:8000/students/confirm-email/?token={one_time_token}
+        http://localhost:8000/users/confirm-email/?token={one_time_token}
         """
         em = EmailMessage()
         em['From'] = smtp_cfg.email
@@ -115,17 +115,6 @@ class StudentService:
         await self.repo.session.commit()
 
         return auth_token, new_student
-
-    async def confirm_email(self, token: str, caller: UserIdentity) -> None:
-        student_id = await self.redis_conn.get(token)
-        if not student_id:
-            raise exceptions.InvalidConfirmationToken
-
-        if int(student_id) != caller.id:
-            raise exceptions.InvalidIdentity
-
-        await self.user_repo.set_verified(int(student_id))
-        await self.redis_conn.delete(token)
 
     async def get_by_id(self, student_id: int, caller: UserIdentity) -> Student:
         if caller.role == Role.STUDENT and caller.id != student_id:

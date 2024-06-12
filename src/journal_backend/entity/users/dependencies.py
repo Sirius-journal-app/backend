@@ -1,3 +1,5 @@
+from typing import TypeAlias, TYPE_CHECKING
+
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from fastapi_users import FastAPIUsers
@@ -10,6 +12,7 @@ from fastapi_users.authentication import (
 from fastapi_users.jwt import decode_jwt
 from jwt import InvalidTokenError
 from pydantic import SecretStr
+from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
 
@@ -18,6 +21,11 @@ from journal_backend.depends_stub import Stub
 from journal_backend.entity.users.models import UserIdentity
 from journal_backend.entity.users.repository import UserRepository
 from journal_backend.entity.users.service import UserService
+
+if TYPE_CHECKING:
+    RedisT: TypeAlias = Redis[str]
+else:
+    RedisT = Redis
 
 JWT_ALGORITHM = "HS256"
 JWT_AUDIENCE = "fastapi-users:auth"
@@ -32,8 +40,9 @@ async def get_user_repository(
 async def get_user_service(
         user_repository: UserRepository = Depends(Stub(UserRepository)),
         config: Config = Depends(Stub(Config)),
+        redis_conn: RedisT = Depends(Stub(Redis))
 ) -> UserService:
-    yield UserService(user_repository, config.app.jwt_secret)
+    yield UserService(user_repository, config.app.jwt_secret, redis_conn)
 
 
 def get_jwt_strategy(config: Config = Depends(Stub(Config))) -> JWTStrategy[UserIdentity, int]:
