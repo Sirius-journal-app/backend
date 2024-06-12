@@ -51,7 +51,7 @@ class StudentRepository:
     ) -> Sequence[AcademicReport]:
         stmt = (
             select(AcademicReport).
-            join(Class, onclause=Class.id == AcademicReport.lesson_id).
+            join(Class, onclause=Class.id == AcademicReport.class_id).
             where(AcademicReport.student_id == student_id).
             where(Class.starts_at.between(d_left, d_right))
         )

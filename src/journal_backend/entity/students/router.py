@@ -5,6 +5,8 @@ from starlette import status
 
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
+from journal_backend.entity.classes.dto import DailySchedule, build_schedule_response
+from journal_backend.entity.classes.exceptions import ClassNotFound
 from journal_backend.entity.common.pagination import (
     PaginationResponse,
     generate_pagination_response,
@@ -15,7 +17,7 @@ from journal_backend.entity.students.dto import (
     AuthResponse,
     StudentCreate,
     StudentRead,
-    model_to_read_dto,
+    model_to_read_dto, Group, AcademicReportRead, build_academic_reports_response,
 )
 from journal_backend.entity.students.service import StudentService
 from journal_backend.entity.users import exceptions as u_exceptions
@@ -64,7 +66,7 @@ async def confirm_email(
         token: str,
         caller: UserIdentity = Depends(current_user),
         student_service: StudentService = Depends(Stub(StudentService)),
-):
+) -> None:
     try:
         await student_service.confirm_email(token, caller)
     except exceptions.InvalidConfirmationToken as e:
@@ -111,7 +113,7 @@ async def get_student_weekly_schedule(
         offset: int = 0,
         caller: UserIdentity = Depends(current_user),
         student_service: StudentService = Depends(Stub(StudentService))
-) -> PaginationResponse:
+) -> PaginationResponse[DailySchedule]:
     try:
         classes_by_days = await student_service.get_schedule_by_id(student_id, offset, caller)
     except exceptions.StudentNotFound as e:
@@ -124,7 +126,7 @@ async def get_student_weekly_schedule(
     return PaginationResponse(
         next_url=f"{uri_prefix}?offset={offset + 1}",
         prev_url=f"{uri_prefix}?offset={offset - 1}",
-        data=classes_by_days,
+        data=build_schedule_response(classes_by_days),
     )
 
 
@@ -134,7 +136,7 @@ async def get_student_academic_reports(
         offset: int = 0,
         caller: UserIdentity = Depends(current_user),
         student_service: StudentService = Depends(Stub(StudentService))
-) -> PaginationResponse:
+) -> PaginationResponse[AcademicReportRead]:
     try:
         reports = await student_service.get_academic_reports_by_id(student_id, offset, caller)
     except exceptions.StudentNotFound as e:
@@ -147,7 +149,7 @@ async def get_student_academic_reports(
     return PaginationResponse(
         next_url=f"{uri_prefix}?offset={offset + 1}",
         prev_url=f"{uri_prefix}?offset={offset - 1}",
-        data=reports,
+        data=build_academic_reports_response(reports),
     )
 
 
@@ -156,7 +158,7 @@ async def create_academic_reports(
         reports: list[AcademicReportCreate],
         caller: UserIdentity = Depends(current_user),
         service: StudentService = Depends(Stub(StudentService))
-):
+) -> None:
     try:
         await service.create_academic_reports(reports, caller)
     except exceptions.StudentPermissionError as e:
@@ -164,18 +166,41 @@ async def create_academic_reports(
             status_code=status.HTTP_403_FORBIDDEN,
             detail=str(e)
         )
+    except ClassNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
 
 
 @groups_router.get('/{group_id}')
+async def retrieve_group_info(
+        group_id: int,
+        service: StudentService = Depends(Stub(StudentService)),
+) -> Group:
+    group = await service.get_group_info_by_id(group_id)
+    return Group(
+        id=group.id,
+        name=group.name,
+        admission_year=group.admission_year,
+    )
+
+
+@groups_router.get('/{group_id}/students')
 async def get_group_students(
         group_id: int,
         limit: int = 25,
         offset: int = 0,
         caller: UserIdentity = Depends(current_user),
         service: StudentService = Depends(Stub(StudentService)),
-):
+) -> PaginationResponse[StudentRead]:
     try:
-        students, total_in_group = await service.get_students_by_group_id(group_id, caller, limit, offset)
+        students, total_in_group = await service.get_students_by_group_id(
+            group_id,
+            caller,
+            limit,
+            offset
+        )
     except exceptions.StudentPermissionError as e:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

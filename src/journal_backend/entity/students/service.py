@@ -128,6 +128,10 @@ class StudentService:
 
         return student
 
+    async def get_group_info_by_id(self, group_id: int):
+        group = await self.repo.get_group_by_id(group_id)
+        return group
+
     async def get_schedule_by_id(
             self,
             student_id: int | Literal["me"],

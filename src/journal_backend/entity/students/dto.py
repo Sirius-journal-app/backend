@@ -81,7 +81,6 @@ class AcademicReportCreate:
 
 @dataclass
 class AcademicReportRead:
-    id: int
     student: str
     class_: ClassRead
     is_attended: bool
@@ -92,7 +91,6 @@ def build_academic_reports_response(academic_reports: list[AcademicReport]) -> l
     resp = []
     for report in academic_reports:
         resp.append(AcademicReportRead(
-            id=report.id,
             student=report.student.identity.name,
             is_attended=report.is_attended,
             grade=report.grade,
