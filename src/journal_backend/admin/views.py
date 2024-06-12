@@ -126,3 +126,10 @@ class UserIdentityView(ModelView):
         data['hashed_password'] = context.hash(data['hashed_password'])
 
         return await super().validate(request, data)
+
+
+class GroupView(ModelView):
+    exclude_fields_from_list = ["students", "classes"]
+    exclude_fields_from_detail = ["classes"]
+    exclude_fields_from_edit = ["classes"]
+    exclude_fields_from_create = ["classes"]

@@ -25,6 +25,12 @@ class Student(Base):  # type: ignore[misc]
     group: Mapped["Group"] = relationship(back_populates="students", lazy="joined")
     academic_reports: Mapped[list["AcademicReport"]] = relationship(back_populates='student')
 
+    async def __admin_repr__(self, _: Request) -> str:
+        return f"{self.identity.surname} {self.identity.name}"
+
+    async def __admin_select2_repr__(self, _: Request) -> str:
+        return f"<div>{self.identity.surname} {self.identity.name}</div>"
+
 
 class Group(Base):  # type: ignore[misc]
     __tablename__ = "groups"
