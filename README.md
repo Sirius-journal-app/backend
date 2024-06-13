@@ -4,6 +4,56 @@ Backend for the sirius-journal
 ## Stage
 [In development]
 
+## 🛠 Installation and Usage
+
+1. Clone the project & enter its directory
+   ```
+   git clone https://github.com/Sirius-journal-app/backend
+   cd backend
+   ```
+
+2. Initialise and activate virtual environment (Its supposed that you have preinstalled python and python-virtualenv)
+    ```
+    python -m venv venv
+    source venv/bin/activate
+    ```
+
+3. Install dependencies & distributable package
+   ```
+   pip install .
+   ```
+
+   #### [Optional]
+   3.1. Install dev dependencies
+   ```
+   pip install .[dev]
+   ```
+
+   3.2. Run tests
+   ```
+   pytest tests
+   ```
+
+   3.3. Run linters
+   ```
+   mypy -p src.journal_backend -v --follow-imports=normal
+   ruff check .
+   ```
+
+4. Rename **app.example.toml** to **app.toml** or create your own and provide its path to environment variable **$CONFIG_PATH**
+<br></br>
+5. Run the database migrations
+   ```
+   alembic upgrade head
+   ```
+
+6. Run the application
+   ```
+   python -m src.journal_backend
+   ```
+
+7. Check the docs in your browser: <a href="http://localhost:8000/docs">click</a>
+
 ## 🧰 Tech Stack
 
 ### Web API
