@@ -3,7 +3,7 @@ on: [push]
 jobs:
   test:
     name: journal_backend tests
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
@@ -13,11 +13,11 @@ jobs:
     - run: pip install .[test]
     - name: Run tests with pytest
       run: |
-        pytest .\tests\ 
+        pytest src/journal_backend/tests
 
   lint:
     name: journal_backend lint
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
