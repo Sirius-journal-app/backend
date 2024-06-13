@@ -25,7 +25,8 @@ dependencies = [
     "toml==0.10.2",
     "redis==5.0.5",
     "aiosmtplib==3.0.1",
-    "itsdangerous==2.2.0"
+    "itsdangerous==2.2.0",
+    "starlette_admin==0.14.0"
 ]
 
 [project.optional-dependencies]
