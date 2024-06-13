@@ -28,7 +28,7 @@ async def get_student_service(
         user_repository: UserRepository = Depends(Stub(UserRepository)),
         class_repository: ClassRepository = Depends(Stub(ClassRepository)),
         email_sender: EmailSender = Depends(Stub(EmailSender)),
-        redis_conn: RedisT = Depends(Stub(Redis)),
+        redis_conn: RedisT = Depends(Stub(Redis)),  # type:ignore
 ) -> StudentService:
     yield StudentService(
         student_repository,

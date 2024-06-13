@@ -40,7 +40,7 @@ async def get_user_repository(
 async def get_user_service(
         user_repository: UserRepository = Depends(Stub(UserRepository)),
         config: Config = Depends(Stub(Config)),
-        redis_conn: RedisT = Depends(Stub(Redis))
+        redis_conn: RedisT = Depends(Stub(Redis))  # type:ignore
 ) -> UserService:
     yield UserService(user_repository, config.app.jwt_secret, redis_conn)
 

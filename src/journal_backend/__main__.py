@@ -23,7 +23,7 @@ async def main() -> None:
 
     initialise_routers(app)
 
-    redis_pool: ConnectionPool[Connection] = ConnectionPool.from_url(config.redis.uri)
+    redis_pool: ConnectionPool[Connection] = ConnectionPool.from_url(config.redis.uri)  # type:ignore
     initialise_dependencies(app, config, redis_pool)
 
     server = create_http_server(app, config.http_server)

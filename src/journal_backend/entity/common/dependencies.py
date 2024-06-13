@@ -14,6 +14,8 @@ def get_email_sender() -> EmailSender:
     yield EmailSender()
 
 
-async def get_redis_conn(pool: ConnectionPoolT) -> AsyncGenerator[Connection, None]:
+async def get_redis_conn(
+    pool: ConnectionPoolT  # type:ignore
+) -> AsyncGenerator[Connection, None]:  # type:ignore
     conn = Redis.from_pool(pool)  # type:ignore
     yield conn

@@ -48,7 +48,7 @@ class StudentService:
             user_repo: UserRepository,
             class_repo: ClassRepository,
             email_sender: EmailSender,
-            redis_conn: RedisT,
+            redis_conn: RedisT,  # type:ignore
     ) -> None:
         self.repo = repo
         self.user_repo = user_repo
