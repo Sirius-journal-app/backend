@@ -69,7 +69,7 @@ from journal_backend.entity.users.service import UserService
 router = APIRouter()
 
 if TYPE_CHECKING:
-    ConnectionPoolT: TypeAlias = ConnectionPool[Connection]
+    ConnectionPoolT: TypeAlias = ConnectionPool[Connection]  # type:ignore
 else:
     ConnectionPoolT = ConnectionPool
 

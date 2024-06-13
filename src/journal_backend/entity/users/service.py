@@ -10,7 +10,7 @@ from journal_backend.entity.users.models import UserIdentity
 from journal_backend.entity.users.repository import UserRepository
 
 if TYPE_CHECKING:
-    RedisT: TypeAlias = Redis[str]
+    RedisT: TypeAlias = Redis[str]  # type:ignore
 else:
     RedisT = Redis
 
