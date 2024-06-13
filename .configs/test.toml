@@ -1,0 +1,28 @@
+# Application config file
+
+[app]
+title = "journal-app"
+description = "A backend part of sirius-journal"
+jwt_secret = "SECRET"
+
+[http_server]
+host = "0.0.0.0"
+port = 8000
+log_level = "info"
+
+
+[db]
+user = "test"
+password = "test"
+name = "test"
+host = "localhost"
+port = 5433
+
+[smtp]
+host = "smtp.gmail.com"
+email = "usksoaoko@gmail.com"
+password = "xgpj vqhr kavz wijq"
+
+[redis]
+host = "localhost"
+port = 6380
