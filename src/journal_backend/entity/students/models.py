@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import ForeignKey, PrimaryKeyConstraint
+from sqlalchemy import event, ForeignKey, PrimaryKeyConstraint, Connection
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from starlette.requests import Request
 

@@ -23,9 +23,9 @@ class Class(Base):  # type: ignore[misc]
         Interval(native=True),
         default=DEFAULT_CLASS_DURATION
     )
-    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id"))
-    teacher_id: Mapped[Optional[int]] = mapped_column(ForeignKey("teachers.id"))
-    subject_id: Mapped[Optional[int]] = mapped_column(ForeignKey("subjects.id"))
+    group_id: Mapped[int] = mapped_column(ForeignKey("groups.id", ondelete='CASCADE'))
+    teacher_id: Mapped[Optional[int]] = mapped_column(ForeignKey("teachers.id", ondelete='SET NULL'))
+    subject_id: Mapped[Optional[int]] = mapped_column(ForeignKey("subjects.id", ondelete='SET NULL'))
     classroom_id: Mapped[Optional[int]] = mapped_column(
         ForeignKey("classrooms.id", ondelete="SET NULL")
     )
@@ -39,9 +39,16 @@ class Class(Base):  # type: ignore[misc]
     __table_args__ = (
         ForeignKeyConstraint(
             [teacher_id, subject_id],
-            ["competencies.teacher_id", "competencies.subject_id"]
+            ["competencies.teacher_id", "competencies.subject_id"],
+            ondelete="SET NULL"
         ),
     )
+
+    async def __admin_repr__(self, _: Request) -> str:
+        return f"Group: {self.group.name}; Subject: {self.subject.name if self.subject else None}; Starts at: {self.starts_at}"
+
+    async def __admin_select2_repr__(self, _: Request) -> str:
+        return f"<div>Group: {self.group.name}; Subject: {self.subject.name if self.subject else None}; Starts at: {self.starts_at}</div>"
 
 
 class Classroom(Base):  # type: ignore[misc]
@@ -54,3 +61,6 @@ class Classroom(Base):  # type: ignore[misc]
 
     async def __admin_repr__(self, _: Request) -> str:
         return f"{self.name}"
+
+    async def __admin_select2_repr__(self, _: Request) -> str:
+        return f"<div>{self.name}</div>"

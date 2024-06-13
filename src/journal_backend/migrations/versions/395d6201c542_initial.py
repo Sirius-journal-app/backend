@@ -80,10 +80,10 @@ def upgrade() -> None:
     sa.Column('subject_id', sa.Integer(), nullable=True),
     sa.Column('classroom_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['classroom_id'], ['classrooms.id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ),
-    sa.ForeignKeyConstraint(['subject_id'], ['subjects.id'], ),
-    sa.ForeignKeyConstraint(['teacher_id', 'subject_id'], ['competencies.teacher_id', 'competencies.subject_id'], ),
-    sa.ForeignKeyConstraint(['teacher_id'], ['teachers.id'], ),
+    sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['subject_id'], ['subjects.id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['teacher_id', 'subject_id'], ['competencies.teacher_id', 'competencies.subject_id'], ondelete='SET NULL'),
+    sa.ForeignKeyConstraint(['teacher_id'], ['teachers.id'], ondelete='SET NULL'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('academic_reports',

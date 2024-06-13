@@ -17,7 +17,7 @@ from journal_backend.admin.views import (
     ClassView,
     SubjectView,
     TeacherView,
-    UserIdentityView, GroupView,
+    UserIdentityView, GroupView, StudentView,
 )
 from journal_backend.config import AppConfig, Config, HttpServerConfig
 from journal_backend.database.dependencies import get_session
@@ -129,7 +129,7 @@ def initialise_dependencies(
         middlewares=[Middleware(SessionMiddleware, secret_key=config.app.jwt_secret)],
     )
     admin.add_view(UserIdentityView(UserIdentity))
-    admin.add_view(ModelView(Student))
+    admin.add_view(StudentView(Student))
     admin.add_view(GroupView(Group))
     admin.add_view(TeacherView(Teacher))
     admin.add_view(SubjectView(Subject))

@@ -1,12 +1,14 @@
 from datetime import timedelta, time
-from typing import Any
+from typing import Any, Optional, Sequence
 
 from passlib.context import CryptContext
-from sqlalchemy import select
+from sqlalchemy import select, Select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 from starlette.requests import Request
-from starlette_admin import TimeField, RequestAction, BaseField, EmailField, PasswordField
+from starlette_admin import TimeField, RequestAction, BaseField, EmailField, PasswordField, RelationField
 from starlette_admin.contrib.sqla import ModelView
+from starlette_admin.contrib.sqla.helpers import build_query
 from starlette_admin.exceptions import FormValidationError
 
 from journal_backend.entity.classes.models import Classroom
@@ -23,6 +25,8 @@ class ClassView(ModelView):
         "classroom",  # type:ignore
         "subject",  # type:ignore
     ]
+    searchable_fields = ["group", "subject", "starts_at"]
+    search_builder = True
 
     async def validate(self, request: Request, data: dict[str, Any]) -> None:
         errors: dict[str | int, Any] = {}
@@ -71,6 +75,7 @@ class ClassView(ModelView):
 
 class ClassroomView(ModelView):
     fields = ["id", "name"]  # type:ignore
+    searchable_fields = ["name"]
 
     async def validate(self, request: Request, data: dict[str, Any]):
         new_name = data['name']
@@ -85,6 +90,7 @@ class ClassroomView(ModelView):
 
 class SubjectView(ModelView):
     fields = ["id", "name"]  # type:ignore
+    searchable_fields = ["name"]
 
     async def validate(self, request: Request, data: dict[str, Any]):
         new_name = data['name']
@@ -105,8 +111,7 @@ class TeacherView(ModelView):
         "education",  # type:ignore
         "competencies",  # type:ignore
     ]
-
-    exclude_fields_from_edit = ["competencies"]
+    searchable_fields = ["identity.name", "identity.surname"]
 
 
 class UserIdentityView(ModelView):
@@ -120,6 +125,7 @@ class UserIdentityView(ModelView):
         EmailField("email"),
         PasswordField("hashed_password", label='Password'),
     ]
+    searchable_fields = ["name", "surname"]
 
     async def validate(self, request: Request, data: dict[str, Any]) -> None:
         context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -133,3 +139,8 @@ class GroupView(ModelView):
     exclude_fields_from_detail = ["classes"]
     exclude_fields_from_edit = ["classes"]
     exclude_fields_from_create = ["classes"]
+    searchable_fields = ["name"]
+
+
+class StudentView(ModelView):
+    searchable_fields = ["group", "identity"]
