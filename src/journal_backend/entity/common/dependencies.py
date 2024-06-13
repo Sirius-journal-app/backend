@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, TypeAlias, AsyncGenerator
+from typing import TYPE_CHECKING, AsyncGenerator, TypeAlias
 
-from redis.asyncio import ConnectionPool, Connection, Redis
+from redis.asyncio import Connection, ConnectionPool, Redis
 
 from journal_backend.entity.common.email_sender import EmailSender
 

@@ -2,7 +2,7 @@ import asyncio
 import uuid
 from datetime import date, timedelta
 from email.message import EmailMessage
-from typing import Literal, TypeAlias, TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, TypeAlias
 
 from fastapi_users import jwt
 from passlib.context import CryptContext
@@ -18,7 +18,11 @@ from journal_backend.entity.students.dto import (
     AcademicReportCreate,
     StudentCreate,
 )
-from journal_backend.entity.students.models import AcademicReport, Student, Group
+from journal_backend.entity.students.models import (
+    AcademicReport,
+    Group,
+    Student,
+)
 from journal_backend.entity.students.repository import StudentRepository
 from journal_backend.entity.users import exceptions as u_exceptions
 from journal_backend.entity.users.enums import Role

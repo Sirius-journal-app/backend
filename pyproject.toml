@@ -66,6 +66,7 @@ exclude = [
     "venv",
     ".configs/db.env",
     "*/migrations/versions",
+    "generate_data.py"
 ]
 
 # Same as Black.
@@ -109,7 +110,10 @@ skip_glob = ["docs/*", "*/migrations/versions"]
 [tool.mypy]
 strict = true
 exclude = [
-    "^src/journal_backend/migrations/"
+    "^src/journal_backend/migrations/",
+    "^src/journal_backend/tests/integration/conftest.py",
+    "^src/journal_backend/tests/unit/conftest.py",
+    "^src/journal_backend/tests/unit/test_register_user.py",
 ]
 python_version = "3.11"
 ignore_missing_imports = true

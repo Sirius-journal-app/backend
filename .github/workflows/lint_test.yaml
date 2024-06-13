@@ -1,0 +1,31 @@
+name: "Test & lint"
+on: [push]
+jobs:
+  test:
+    name: journal_backend tests
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip' # caching pip dependencies
+    - run: pip install .[dev]
+    - name: Run tests with pytest
+      run: |
+        pytest .\tests\ 
+
+  lint:
+    name: journal_backend lint
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install .[dev]
+      - name: Run linters
+        run: |
+          mypy -p src.journal_backend -v --follow-imports=normal
+          ruff check .

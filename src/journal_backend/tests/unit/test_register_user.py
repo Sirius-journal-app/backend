@@ -1,4 +1,3 @@
-from datetime import date, time
 from unittest.mock import AsyncMock
 
 from fastapi import FastAPI
@@ -11,7 +10,6 @@ from journal_backend.entity.classes.repository import ClassRepository
 from journal_backend.entity.common.email_sender import EmailSender
 from journal_backend.entity.students.models import Student
 from journal_backend.entity.students.repository import StudentRepository
-from journal_backend.entity.students.service import StudentService
 from journal_backend.entity.teachers.models import Teacher
 from journal_backend.entity.teachers.repository import TeacherRepository
 from journal_backend.entity.users.enums import Role

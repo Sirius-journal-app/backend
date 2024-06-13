@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from journal_backend.app_setup import create_app, initialise_routers, initialise_dependencies
+from journal_backend.app_setup import create_app, initialise_routers
 from journal_backend.config import Config
 from journal_backend.depends_stub import Stub
 from journal_backend.entity.students.dependencies import get_student_service

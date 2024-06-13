@@ -1,4 +1,4 @@
-from typing import TypeAlias, TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer

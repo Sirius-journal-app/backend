@@ -11,7 +11,8 @@ from journal_backend.entity.users import exceptions
 from journal_backend.entity.users.dependencies import (
     auth_backend,
     authenticator,
-    get_user_service, current_user,
+    current_user,
+    get_user_service,
 )
 from journal_backend.entity.users.dto import UserRead, UserUpdate
 from journal_backend.entity.users.models import UserIdentity

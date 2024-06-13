@@ -1,18 +1,22 @@
-from datetime import timedelta, time
-from typing import Any, Optional, Sequence
+from datetime import time, timedelta
+from typing import Any
 
 from passlib.context import CryptContext
-from sqlalchemy import select, Select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
 from starlette.requests import Request
-from starlette_admin import TimeField, RequestAction, BaseField, EmailField, PasswordField, RelationField
+from starlette_admin import (
+    BaseField,
+    EmailField,
+    PasswordField,
+    RequestAction,
+    TimeField,
+)
 from starlette_admin.contrib.sqla import ModelView
-from starlette_admin.contrib.sqla.helpers import build_query
 from starlette_admin.exceptions import FormValidationError
 
 from journal_backend.entity.classes.models import Classroom
-from journal_backend.entity.teachers.models import Teacher, Subject
+from journal_backend.entity.teachers.models import Subject, Teacher
 
 
 class ClassView(ModelView):
@@ -77,7 +81,7 @@ class ClassroomView(ModelView):
     fields = ["id", "name"]  # type:ignore
     searchable_fields = ["name"]
 
-    async def validate(self, request: Request, data: dict[str, Any]):
+    async def validate(self, request: Request, data: dict[str, Any]) -> None:
         new_name = data['name']
         stmt = select(Classroom).where(Classroom.name == new_name)
 
@@ -92,7 +96,7 @@ class SubjectView(ModelView):
     fields = ["id", "name"]  # type:ignore
     searchable_fields = ["name"]
 
-    async def validate(self, request: Request, data: dict[str, Any]):
+    async def validate(self, request: Request, data: dict[str, Any]) -> None:
         new_name = data['name']
         stmt = select(Subject).where(Subject.name == new_name)
 

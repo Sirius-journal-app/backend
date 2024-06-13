@@ -8,7 +8,7 @@ import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from httpx import AsyncClient
-from redis.asyncio import ConnectionPool, Connection, Redis
+from redis.asyncio import Connection, ConnectionPool, Redis
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -26,7 +26,6 @@ from journal_backend.database.base import Base
 from journal_backend.database.dependencies import create_session
 from journal_backend.database.sa_utils import create_session_maker
 from journal_backend.entity.models import *  # noqa
-
 from journal_backend.entity.users.models import UserIdentity
 from journal_backend.entity.users.repository import UserRepository
 from journal_backend.entity.users.service import UserService
@@ -112,7 +111,7 @@ def initialise_test_redis(config: Config) -> None:
 
 
 @pytest.fixture(scope="session")
-def engine(config: Config, initialise_test_db: ...) -> AsyncEngine:
+def engine(config: Config, initialise_test_db) -> AsyncEngine:
     return create_async_engine(config.db.uri, echo=True)
 
 

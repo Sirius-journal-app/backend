@@ -1,4 +1,4 @@
-from typing import Optional, TypeAlias, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, TypeAlias
 
 from fastapi import Request
 from fastapi_users import BaseUserManager, IntegerIDMixin

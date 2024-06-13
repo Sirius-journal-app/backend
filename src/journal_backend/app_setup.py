@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, TypeAlias
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from pydantic import BaseModel
-from redis.asyncio import ConnectionPool, Redis, Connection
+from redis.asyncio import Connection, ConnectionPool, Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware import Middleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -15,9 +15,11 @@ from journal_backend.admin.auth_provider import MyAuthProvider
 from journal_backend.admin.views import (
     ClassroomView,
     ClassView,
+    GroupView,
+    StudentView,
     SubjectView,
     TeacherView,
-    UserIdentityView, GroupView, StudentView,
+    UserIdentityView,
 )
 from journal_backend.config import AppConfig, Config, HttpServerConfig
 from journal_backend.database.dependencies import get_session
