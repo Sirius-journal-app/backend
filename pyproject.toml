@@ -23,6 +23,8 @@ dependencies = [
     "fastapi-users==12.1.2",
     "fastapi-users-db-sqlalchemy==6.0.1",
     "toml==0.10.2",
+    "redis==5.0.5",
+    "aiosmtplib==3.0.1",
 ]
 
 [project.optional-dependencies]
